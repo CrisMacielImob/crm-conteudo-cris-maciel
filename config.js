@@ -7,5 +7,5 @@
 // salvando só neste navegador. Assim que forem preenchidos, ele passa a
 // sincronizar em tempo real com quem mais estiver usando o mesmo projeto.
 
-window.SUPABASE_URL = '';
-window.SUPABASE_ANON_KEY = '';
+window.SUPABASE_URL = 'https://abuzexbahbjrayfmpdpn.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_XQJAxZDfnaM3M_lOWzy_jA_fHaJNmo-';
