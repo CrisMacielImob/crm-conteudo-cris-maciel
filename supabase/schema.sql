@@ -42,8 +42,23 @@ create table if not exists public.ideas (
 -- ---------- REALTIME ----------
 -- Habilita a replicacao das duas tabelas para o canal realtime do Supabase,
 -- assim as mudancas de um navegador aparecem no outro sem precisar recarregar.
-alter publication supabase_realtime add table public.cards;
-alter publication supabase_realtime add table public.ideas;
+-- Projetos novos do Supabase ja adicionam tabelas recem criadas nesse canal
+-- sozinhos, entao o bloco abaixo so age se ainda nao tiver sido feito.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname='supabase_realtime' and schemaname='public' and tablename='cards'
+  ) then
+    alter publication supabase_realtime add table public.cards;
+  end if;
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname='supabase_realtime' and schemaname='public' and tablename='ideas'
+  ) then
+    alter publication supabase_realtime add table public.ideas;
+  end if;
+end $$;
 
 -- ---------- RLS ----------
 -- Sem login: qualquer pessoa com a URL e a chave anon do projeto le e
@@ -52,6 +67,15 @@ alter publication supabase_realtime add table public.ideas;
 -- quiser exigir login, troque estas policies por regras com auth.uid().
 alter table public.cards enable row level security;
 alter table public.ideas enable row level security;
+
+drop policy if exists "cards: leitura publica" on public.cards;
+drop policy if exists "cards: escrita publica" on public.cards;
+drop policy if exists "cards: atualizacao publica" on public.cards;
+drop policy if exists "cards: exclusao publica" on public.cards;
+drop policy if exists "ideas: leitura publica" on public.ideas;
+drop policy if exists "ideas: escrita publica" on public.ideas;
+drop policy if exists "ideas: atualizacao publica" on public.ideas;
+drop policy if exists "ideas: exclusao publica" on public.ideas;
 
 create policy "cards: leitura publica" on public.cards
   for select using (true);
