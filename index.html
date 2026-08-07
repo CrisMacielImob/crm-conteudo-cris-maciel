@@ -406,12 +406,15 @@
 </div>
 
 <div class="foot-note">
+  <span id="modeNote" style="display:none">Modo local, sem sincronização</span>
   <span class="saving" id="saving">Salvo ✓</span>
   <button id="btnExport">Exportar backup</button>
   <button id="btnImport">Importar backup</button>
   <input type="file" id="fileImport" accept="application/json">
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
 <script>
 const DAY=86400000;
 const PRAZO_DIAS=5;
@@ -503,34 +506,141 @@ function computeDelivery(c){
 function runAutomations(){
   const now=Date.now();
   const hoje=todayISO();
-  let changed=false;
+  const changed=[];
   cards.forEach(c=>{
     if(c.archived) return;
+    let didChange=false;
     if(c.stage===S_AGEND && c.dataGravacao && hoje>c.dataGravacao){
       c.stage=S_GRAV;
       c.gravadoAt=new Date(c.dataGravacao+'T00:00:00').getTime();
       if(!c.agendadoAt) c.agendadoAt=c.gravadoAt;
-      changed=true;
+      didChange=true;
     }
     if(c.stage!==S_POST && c.areas && c.areas.some(a=>a.data && hoje>=a.data)){
       c.stage=S_POST;
       const marco=c.areas.filter(a=>a.data&&hoje>=a.data).map(a=>new Date(a.data+'T00:00:00').getTime()).sort((x,y)=>x-y)[0];
       c.postadoAt=marco||now;
-      changed=true;
+      didChange=true;
     }
+    if(didChange) changed.push(c);
   });
   return changed;
 }
 
-/* ---------- STORAGE (localStorage, camada trocável por backend) ---------- */
+/* ---------- NUVEM (Supabase) ---------- */
+let cloud=false;
+let sb=null;
+function initCloud(){
+  if(window.SUPABASE_URL && window.SUPABASE_ANON_KEY && !/SUA[_-]/.test(window.SUPABASE_URL)){
+    try{
+      sb=window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      cloud=true;
+    }catch(e){ console.error('não foi possível iniciar o Supabase',e); cloud=false; }
+  }
+}
+function cardToRow(c){
+  return {
+    id:c.id, title:c.title, classificacoes:c.classificacoes, corretor:c.corretor, codigo:c.codigo,
+    data_gravacao:c.dataGravacao||null, areas:c.areas, pub_hora:c.pubHora, link:c.link, obs:c.obs,
+    checklist:c.checklist, stage:c.stage, archived:c.archived,
+    created_at:new Date(c.createdAt).toISOString(),
+    agendado_at:c.agendadoAt?new Date(c.agendadoAt).toISOString():null,
+    gravado_at:c.gravadoAt?new Date(c.gravadoAt).toISOString():null,
+    entregue_at:c.entregueAt?new Date(c.entregueAt).toISOString():null,
+    postado_at:c.postadoAt?new Date(c.postadoAt).toISOString():null,
+    delivery_status:c.deliveryStatus, delivery_days:c.deliveryDays,
+  };
+}
+function rowToCard(r){
+  return {
+    id:r.id, title:r.title, classificacoes:r.classificacoes||[], corretor:r.corretor||'', codigo:r.codigo||'',
+    dataGravacao:r.data_gravacao||'', areas:r.areas||[], pubHora:r.pub_hora||'', link:r.link||'', obs:r.obs||'',
+    checklist:r.checklist||[], stage:r.stage, archived:r.archived,
+    createdAt:r.created_at?new Date(r.created_at).getTime():Date.now(),
+    agendadoAt:r.agendado_at?new Date(r.agendado_at).getTime():null,
+    gravadoAt:r.gravado_at?new Date(r.gravado_at).getTime():null,
+    entregueAt:r.entregue_at?new Date(r.entregue_at).getTime():null,
+    postadoAt:r.postado_at?new Date(r.postado_at).getTime():null,
+    deliveryStatus:r.delivery_status||null, deliveryDays:r.delivery_days!=null?r.delivery_days:null,
+  };
+}
+function ideaToRow(i){
+  return {id:i.id, titulo:i.titulo, formato:i.formato, prioridade:i.prioridade, descricao:i.descricao,
+    referencia:i.referencia, created_at:new Date(i.createdAt).toISOString()};
+}
+function rowToIdea(r){
+  return {id:r.id, titulo:r.titulo, formato:r.formato||'', prioridade:r.prioridade||'Média',
+    descricao:r.descricao||'', referencia:r.referencia||'', createdAt:r.created_at?new Date(r.created_at).getTime():Date.now()};
+}
+async function dbInsertCard(c){ if(!cloud)return; const{error}=await sb.from('cards').insert(cardToRow(c)); if(error)console.error('insert card',error); flashSaving(); }
+async function dbUpdateCard(c){ if(!cloud)return; const{error}=await sb.from('cards').update(cardToRow(c)).eq('id',c.id); if(error)console.error('update card',error); flashSaving(); }
+async function dbDeleteCard(id){ if(!cloud)return; const{error}=await sb.from('cards').delete().eq('id',id); if(error)console.error('delete card',error); flashSaving(); }
+async function dbInsertIdea(i){ if(!cloud)return; const{error}=await sb.from('ideas').insert(ideaToRow(i)); if(error)console.error('insert idea',error); flashSaving(); }
+async function dbUpdateIdea(i){ if(!cloud)return; const{error}=await sb.from('ideas').update(ideaToRow(i)).eq('id',i.id); if(error)console.error('update idea',error); flashSaving(); }
+async function dbDeleteIdea(id){ if(!cloud)return; const{error}=await sb.from('ideas').delete().eq('id',id); if(error)console.error('delete idea',error); flashSaving(); }
+
+async function syncCard(c){ if(cloud) await dbUpdateCard(c); else persistLocal(); }
+async function syncNewCard(c){ if(cloud) await dbInsertCard(c); else persistLocal(); }
+async function syncDeleteCard(id){ if(cloud) await dbDeleteCard(id); else persistLocal(); }
+async function syncIdea(i){ if(cloud) await dbUpdateIdea(i); else persistLocal(); }
+async function syncNewIdea(i){ if(cloud) await dbInsertIdea(i); else persistLocal(); }
+async function syncDeleteIdea(id){ if(cloud) await dbDeleteIdea(id); else persistLocal(); }
+
+function subscribeRealtime(){
+  sb.channel('cards-ideas-sync')
+    .on('postgres_changes',{event:'*',schema:'public',table:'cards'},payload=>{
+      if(payload.eventType==='DELETE'){ cards=cards.filter(c=>c.id!==payload.old.id); }
+      else{
+        const c=rowToCard(payload.new);
+        const i=cards.findIndex(x=>x.id===c.id);
+        if(i>=0) cards[i]=c; else cards.push(c);
+      }
+      render();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'ideas'},payload=>{
+      if(payload.eventType==='DELETE'){ ideas=ideas.filter(x=>x.id!==payload.old.id); }
+      else{
+        const i2=rowToIdea(payload.new);
+        const idx=ideas.findIndex(x=>x.id===i2.id);
+        if(idx>=0) ideas[idx]=i2; else ideas.push(i2);
+      }
+      render();
+    })
+    .subscribe();
+}
+
+/* ---------- STORAGE ---------- */
 async function load(){
+  initCloud();
+  if(cloud){
+    try{
+      const [cardsRes,ideasRes]=await Promise.all([
+        sb.from('cards').select('*').order('created_at',{ascending:true}),
+        sb.from('ideas').select('*').order('created_at',{ascending:true}),
+      ]);
+      if(cardsRes.error) throw cardsRes.error;
+      if(ideasRes.error) throw ideasRes.error;
+      cards=(cardsRes.data||[]).map(rowToCard);
+      ideas=(ideasRes.data||[]).map(rowToIdea);
+      subscribeRealtime();
+    }catch(e){
+      console.error('não foi possível carregar do Supabase, usando modo local',e);
+      cloud=false;
+      loadLocal();
+    }
+  }else{
+    loadLocal();
+  }
+  document.getElementById('modeNote').style.display=cloud?'none':'inline';
+}
+function loadLocal(){
   try{
     const raw=localStorage.getItem(KEY);
     if(raw){ const d=JSON.parse(raw); cards=d.cards||[]; ideas=d.ideas||[]; return; }
     const migrated=migrate();
-    if(migrated){ cards=migrated.cards; ideas=migrated.ideas; await persist(); return; }
-    const seeded=seed(); cards=seeded.cards; ideas=seeded.ideas; await persist();
-  }catch(e){ const seeded=seed(); cards=seeded.cards; ideas=seeded.ideas; try{await persist();}catch(_){} }
+    if(migrated){ cards=migrated.cards; ideas=migrated.ideas; persistLocal(); return; }
+    const seeded=seed(); cards=seeded.cards; ideas=seeded.ideas; persistLocal();
+  }catch(e){ const seeded=seed(); cards=seeded.cards; ideas=seeded.ideas; try{persistLocal();}catch(_){} }
 }
 function migrate(){
   try{
@@ -554,13 +664,13 @@ function migrate(){
   }catch(e){ return null; }
 }
 let saveTimer=null;
-async function persist(){
-  try{
-    localStorage.setItem(KEY,JSON.stringify({cards,ideas}));
-    const s=document.getElementById('saving');
-    s.classList.add('on');clearTimeout(saveTimer);
-    saveTimer=setTimeout(()=>s.classList.remove('on'),1100);
-  }catch(e){console.error('storage',e)}
+function flashSaving(){
+  const s=document.getElementById('saving');
+  s.classList.add('on');clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>s.classList.remove('on'),1100);
+}
+function persistLocal(){
+  try{ localStorage.setItem(KEY,JSON.stringify({cards,ideas})); flashSaving(); }catch(e){console.error('storage',e)}
 }
 
 /* ---------- URGÊNCIA (ordenação automática) ---------- */
@@ -621,7 +731,7 @@ function renderBoard(){
     body.addEventListener('drop',e=>{
       e.preventDefault();body.classList.remove('drop');
       const id=e.dataTransfer.getData('id');const c=cards.find(x=>x.id===id);
-      if(c&&c.stage!==si){enterStage(c,si);persist();render();}
+      if(c&&c.stage!==si){enterStage(c,si);syncCard(c);render();}
     });
     if(list.length===0){
       body.innerHTML=`<div class="col-empty">${si===S_PROD?'Anote aqui as ideias em produção.':'Nada por aqui.'}</div>`;
@@ -700,9 +810,9 @@ function cardEl(c,si){
   el.addEventListener('dragend',()=>el.classList.remove('dragging'));
   el.addEventListener('click',e=>{
     const mv=e.target.closest('[data-mv]');
-    if(mv){e.stopPropagation();const ns=c.stage+ +mv.dataset.mv;if(ns>=0&&ns<STAGES.length){enterStage(c,ns);persist();render();}return;}
+    if(mv){e.stopPropagation();const ns=c.stage+ +mv.dataset.mv;if(ns>=0&&ns<STAGES.length){enterStage(c,ns);syncCard(c);render();}return;}
     const ar=e.target.closest('[data-arch]');
-    if(ar){e.stopPropagation();c.archived=true;persist();render();return;}
+    if(ar){e.stopPropagation();c.archived=true;syncCard(c);render();return;}
     openCardModal(c);
   });
   return el;
@@ -756,7 +866,8 @@ function renderIdeas(){
       agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null};
     cards.push(c);
     ideas=ideas.filter(x=>x.id!==idea.id);
-    persist();view='board';render();
+    syncNewCard(c);syncDeleteIdea(idea.id);
+    view='board';render();
   }));
   box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{
     const idea=ideas.find(x=>x.id===b.dataset.edit);if(idea) openIdeaModal(idea);
@@ -838,10 +949,10 @@ function renderArchive(){
   }
   box.innerHTML=html;
   box.querySelectorAll('[data-restore]').forEach(b=>b.addEventListener('click',()=>{
-    const c=cards.find(x=>x.id===b.dataset.restore);if(c){c.archived=false;persist();render();}
+    const c=cards.find(x=>x.id===b.dataset.restore);if(c){c.archived=false;syncCard(c);render();}
   }));
   box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
-    if(confirm('Excluir definitivamente este card?')){cards=cards.filter(x=>x.id!==b.dataset.del);persist();render();}
+    if(confirm('Excluir definitivamente este card?')){const id=b.dataset.del;syncDeleteCard(id);cards=cards.filter(x=>x.id!==id);render();}
   }));
 }
 
@@ -945,17 +1056,20 @@ function saveCardModal(){
     Object.assign(c,data);
     if(newStage!==prevStage) enterStage(c,newStage);
     else if(newStage===S_GRAV && !c.gravadoAt) c.gravadoAt=c.dataGravacao?new Date(c.dataGravacao+'T00:00:00').getTime():Date.now();
+    runAutomations();
+    syncCard(c);
   }else{
     const c={id:crypto.randomUUID(),...data,stage:0,archived:false,createdAt:Date.now(),
       agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null};
     enterStage(c,newStage);
     cards.push(c);
+    runAutomations();
+    syncNewCard(c);
   }
-  runAutomations();
-  persist();render();closeCardModal();
+  render();closeCardModal();
 }
-function deleteCard(){if(!editingCardId)return;cards=cards.filter(c=>c.id!==editingCardId);persist();render();closeCardModal();}
-function archiveCard(){if(!editingCardId)return;const c=cards.find(x=>x.id===editingCardId);if(c){c.archived=true;persist();render();closeCardModal();}}
+function deleteCard(){if(!editingCardId)return;syncDeleteCard(editingCardId);cards=cards.filter(c=>c.id!==editingCardId);render();closeCardModal();}
+function archiveCard(){if(!editingCardId)return;const c=cards.find(x=>x.id===editingCardId);if(c){c.archived=true;syncCard(c);render();closeCardModal();}}
 
 /* ---------- MODAL IDEIA ---------- */
 function openIdeaModal(idea){
@@ -984,12 +1098,15 @@ function saveIdeaModal(){
   if(editingIdeaId){
     const i=ideas.find(x=>x.id===editingIdeaId);
     Object.assign(i,data);
+    syncIdea(i);
   }else{
-    ideas.push({id:crypto.randomUUID(),...data,createdAt:Date.now()});
+    const i=({id:crypto.randomUUID(),...data,createdAt:Date.now()});
+    ideas.push(i);
+    syncNewIdea(i);
   }
-  persist();render();closeIdeaModal();
+  render();closeIdeaModal();
 }
-function deleteIdea(){if(!editingIdeaId)return;ideas=ideas.filter(i=>i.id!==editingIdeaId);persist();render();closeIdeaModal();}
+function deleteIdea(){if(!editingIdeaId)return;syncDeleteIdea(editingIdeaId);ideas=ideas.filter(i=>i.id!==editingIdeaId);render();closeIdeaModal();}
 
 /* ---------- EXPORT / IMPORT ---------- */
 function exportBackup(){
@@ -1007,10 +1124,22 @@ function importBackup(file){
     try{
       const data=JSON.parse(e.target.result);
       if(!Array.isArray(data.cards)||!Array.isArray(data.ideas)) throw new Error('formato inválido');
-      if(!confirm('Importar este backup substitui os dados atuais. Continuar?')) return;
-      cards=data.cards;ideas=data.ideas;
-      await persist();render();
-    }catch(err){ alert('Não foi possível importar este arquivo.'); }
+      const aviso=cloud?'Importar este backup substitui os dados atuais para todo mundo. Continuar?':'Importar este backup substitui os dados atuais. Continuar?';
+      if(!confirm(aviso)) return;
+      if(cloud){
+        const nulo='00000000-0000-0000-0000-000000000000';
+        await sb.from('cards').delete().neq('id',nulo);
+        await sb.from('ideas').delete().neq('id',nulo);
+        if(data.cards.length) await sb.from('cards').insert(data.cards.map(cardToRow));
+        if(data.ideas.length) await sb.from('ideas').insert(data.ideas.map(ideaToRow));
+        cards=data.cards;ideas=data.ideas;
+        flashSaving();
+      }else{
+        cards=data.cards;ideas=data.ideas;
+        persistLocal();
+      }
+      render();
+    }catch(err){ console.error(err); alert('Não foi possível importar este arquivo.'); }
   };
   reader.readAsText(file);
 }
@@ -1083,10 +1212,17 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCardModal();cl
 (async function(){
   initSelects();
   await load();
-  runAutomations(); await persist();
+  const changed=runAutomations();
+  if(cloud) changed.forEach(syncCard); else if(changed.length) persistLocal();
   render();
   document.getElementById('loading').style.display='none';
-  setInterval(()=>{ if(runAutomations()){persist();render();} }, 60000);
+  setInterval(()=>{
+    const changed2=runAutomations();
+    if(changed2.length){
+      if(cloud) changed2.forEach(syncCard); else persistLocal();
+      render();
+    }
+  }, 60000);
 })();
 </script>
 </body>
