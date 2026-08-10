@@ -22,11 +22,17 @@ create table if not exists public.cards (
   created_at timestamptz not null default now(),
   agendado_at timestamptz,
   gravado_at timestamptz,
+  data_entrega date,
   entregue_at timestamptz,
   postado_at timestamptz,
   delivery_status text,
-  delivery_days integer
+  delivery_days integer,
+  auto_archive_opt_out boolean not null default false
 );
+
+-- Cobre projetos onde a tabela cards ja existia antes destas duas colunas.
+alter table public.cards add column if not exists data_entrega date;
+alter table public.cards add column if not exists auto_archive_opt_out boolean not null default false;
 
 -- ---------- IDEIAS ----------
 create table if not exists public.ideas (

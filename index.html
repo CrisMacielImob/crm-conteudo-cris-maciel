@@ -334,6 +334,11 @@
       </div>
       <div class="hint-inline" style="margin-top:-9px;margin-bottom:15px">Quando essa data passar, o card vai sozinho de <b>Agendado</b> para <b>Gravado</b>. A partir daí começam a contar os 5 dias de prazo de entrega.</div>
       <div class="field">
+        <label>Data de entrega</label>
+        <input type="date" id="fDataEntrega">
+      </div>
+      <div class="hint-inline" style="margin-top:-9px;margin-bottom:15px">Preencher esta data move o card para <b>Entregue</b> e recalcula o prazo na hora. Deixe em branco para desfazer a entrega.</div>
+      <div class="field">
         <label>Horário padrão de publicação</label>
         <input type="time" id="fPubHora" style="max-width:160px">
       </div>
@@ -408,6 +413,7 @@
 <div class="foot-note">
   <span id="modeNote" style="display:none">Modo local, sem sincronização</span>
   <span class="saving" id="saving">Salvo ✓</span>
+  <button id="btnReport">Exportar relatório</button>
   <button id="btnExport">Exportar backup</button>
   <button id="btnImport">Importar backup</button>
   <input type="file" id="fileImport" accept="application/json">
@@ -418,6 +424,7 @@
 <script>
 const DAY=86400000;
 const PRAZO_DIAS=5;
+const ARQUIVA_DIAS=5;
 
 const STAGES=[
   {key:'produzir',label:'A produzir',emoji:'📝'},
@@ -487,14 +494,26 @@ function enterStage(c,ns){
     c.gravadoAt = c.dataGravacao ? new Date(c.dataGravacao+'T00:00:00').getTime() : Date.now();
   }
   if(ns===S_ENTR && prev!==S_ENTR){
-    c.entregueAt=Date.now();
-    computeDelivery(c);
+    if(!c.dataEntrega) c.dataEntrega=todayISO();
+    applyDataEntrega(c);
   }
   if(ns!==S_ENTR && ns<S_ENTR){
-    c.entregueAt=null; c.deliveryStatus=null; c.deliveryDays=null;
+    c.dataEntrega='';
+    applyDataEntrega(c);
   }
   if(ns===S_POST && !c.postadoAt) c.postadoAt=Date.now();
   if(ns<S_POST) c.postadoAt=null;
+}
+/* dataEntrega e a fonte de verdade da entrega. entregueAt, deliveryStatus e
+   deliveryDays sempre derivam dela, nunca do instante em que o card e movido. */
+function applyDataEntrega(c){
+  if(c.dataEntrega){
+    c.entregueAt=new Date(c.dataEntrega+'T00:00:00').getTime();
+    computeDelivery(c);
+    if(c.stage<S_ENTR) c.stage=S_ENTR;
+  }else{
+    c.entregueAt=null; c.deliveryStatus=null; c.deliveryDays=null;
+  }
 }
 function computeDelivery(c){
   const dl = c.gravadoAt ? c.gravadoAt+PRAZO_DIAS*DAY : c.entregueAt;
@@ -503,6 +522,14 @@ function computeDelivery(c){
 }
 
 /* ---------- AUTOMAÇÕES POR TEMPO ---------- */
+function isOverdue(c,si){
+  return si===S_GRAV && c.gravadoAt && Date.now()>c.gravadoAt+PRAZO_DIAS*DAY;
+}
+function menorDataPublicacao(c){
+  if(!c.areas||!c.areas.length) return null;
+  const datas=c.areas.filter(a=>a.data).map(a=>new Date(a.data+'T00:00:00').getTime());
+  return datas.length?Math.min(...datas):null;
+}
 function runAutomations(){
   const now=Date.now();
   const hoje=todayISO();
@@ -522,7 +549,29 @@ function runAutomations(){
       c.postadoAt=marco||now;
       didChange=true;
     }
+    if(!c.autoArchiveOptOut){
+      const menor=menorDataPublicacao(c);
+      if(menor!==null && now>menor+ARQUIVA_DIAS*DAY){
+        c.archived=true;
+        didChange=true;
+      }
+    }
     if(didChange) changed.push(c);
+  });
+  return changed;
+}
+/* Cards salvos antes do campo dataEntrega existir tinham entregueAt sem uma
+   data de origem editavel. Deriva dataEntrega a partir dele, uma unica vez. */
+function backfillDataEntrega(list){
+  const changed=[];
+  list.forEach(c=>{
+    if(c.dataEntrega===undefined) c.dataEntrega='';
+    if(!c.dataEntrega && c.entregueAt){
+      const d=new Date(c.entregueAt);
+      c.dataEntrega=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      changed.push(c);
+    }
+    if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
   });
   return changed;
 }
@@ -546,9 +595,11 @@ function cardToRow(c){
     created_at:new Date(c.createdAt).toISOString(),
     agendado_at:c.agendadoAt?new Date(c.agendadoAt).toISOString():null,
     gravado_at:c.gravadoAt?new Date(c.gravadoAt).toISOString():null,
+    data_entrega:c.dataEntrega||null,
     entregue_at:c.entregueAt?new Date(c.entregueAt).toISOString():null,
     postado_at:c.postadoAt?new Date(c.postadoAt).toISOString():null,
     delivery_status:c.deliveryStatus, delivery_days:c.deliveryDays,
+    auto_archive_opt_out:!!c.autoArchiveOptOut,
   };
 }
 function rowToCard(r){
@@ -559,9 +610,11 @@ function rowToCard(r){
     createdAt:r.created_at?new Date(r.created_at).getTime():Date.now(),
     agendadoAt:r.agendado_at?new Date(r.agendado_at).getTime():null,
     gravadoAt:r.gravado_at?new Date(r.gravado_at).getTime():null,
+    dataEntrega:r.data_entrega||'',
     entregueAt:r.entregue_at?new Date(r.entregue_at).getTime():null,
     postadoAt:r.postado_at?new Date(r.postado_at).getTime():null,
     deliveryStatus:r.delivery_status||null, deliveryDays:r.delivery_days!=null?r.delivery_days:null,
+    autoArchiveOptOut:!!r.auto_archive_opt_out,
   };
 }
 function ideaToRow(i){
@@ -631,6 +684,10 @@ async function load(){
   }else{
     loadLocal();
   }
+  const backfilled=backfillDataEntrega(cards);
+  if(backfilled.length){
+    if(cloud) backfilled.forEach(syncCard); else persistLocal();
+  }
   document.getElementById('modeNote').style.display=cloud?'none':'inline';
 }
 function loadLocal(){
@@ -657,8 +714,9 @@ function migrate(){
       stage:mapStage[o.stage]!==undefined?mapStage[o.stage]:S_PROD,
       archived:!!o.archived, createdAt:o.createdAt||Date.now(),
       agendadoAt:o.agendadoAt||null, gravadoAt:o.gravadoAt||null,
-      entregueAt:o.entregueAt||null, postadoAt:null,
+      dataEntrega:'', entregueAt:o.entregueAt||null, postadoAt:null,
       deliveryStatus:o.deliveryStatus||null, deliveryDays:o.deliveryDays!==undefined?o.deliveryDays:null,
+      autoArchiveOptOut:false,
     }));
     return {cards:migCards,ideas:[]};
   }catch(e){ return null; }
@@ -704,7 +762,7 @@ function render(){
 
 function renderAlertbar(){
   const bar=document.getElementById('alertbar');
-  const atrasados=cards.filter(c=>!c.archived && c.stage===S_GRAV && c.gravadoAt && Date.now()>c.gravadoAt+PRAZO_DIAS*DAY).length;
+  const atrasados=cards.filter(c=>!c.archived && isOverdue(c,c.stage)).length;
   if(atrasados>0){
     bar.classList.add('on');
     bar.textContent=`⚠ ${atrasados} conteúdo${atrasados>1?'s':''} atrasado${atrasados>1?'s':''} na entrega`;
@@ -741,11 +799,45 @@ function renderBoard(){
   });
 }
 
+/* Mesmo texto e cor exibidos no card e no relatorio de acompanhamento,
+   para os dois nunca divergirem. */
+function situacaoInfo(c,si){
+  const overdue=isOverdue(c,si);
+  const parts=[];
+  if(si===S_AGEND){
+    let grava='';
+    if(c.dataGravacao){
+      const d=diasEntre(c.dataGravacao);
+      if(d>1) grava=`🎬 grava em ${d}d`;
+      else if(d===1) grava='🎬 grava amanhã';
+      else if(d===0) grava='🎬 grava hoje';
+      else grava=`🎬 grava há ${-d}d`;
+    }
+    parts.push({text:'● Agendado',cls:'status'});
+    if(grava) parts.push({text:grava,cls:(c.dataGravacao&&diasEntre(c.dataGravacao)<=1)?'soon':'neutral'});
+  }else if(si===S_GRAV && c.gravadoAt){
+    if(overdue){
+      const late=Math.max(0,Math.ceil((Date.now()-(c.gravadoAt+PRAZO_DIAS*DAY))/DAY));
+      parts.push({text:`⚠ Atrasado há ${late} dia${late!==1?'s':''}`,cls:'red'});
+    }else{
+      const dl=c.gravadoAt+PRAZO_DIAS*DAY;
+      const left=Math.ceil((dl-Date.now())/DAY);
+      const cls=left<=1?'soon':'neutral';
+      parts.push({text:`⏱ Entrega até ${fmtTs(dl)}${left>0?' · faltam '+left+'d':(left===0?' · hoje':'')}`,cls});
+    }
+  }else{
+    if(c.deliveryStatus==='ontime') parts.push({text:`✓ Entregue ${c.deliveryDays>0?c.deliveryDays+' dia'+(c.deliveryDays>1?'s':'')+' antes do prazo':'no prazo'}`,cls:'green'});
+    else if(c.deliveryStatus==='late') parts.push({text:`⚠ Entregue com ${c.deliveryDays} dia${c.deliveryDays>1?'s':''} de atraso`,cls:'red'});
+    if(si===S_POST && c.postadoAt) parts.push({text:`🚀 Postado em ${fmtTs(c.postadoAt)}`,cls:'blue'});
+  }
+  return parts;
+}
+
 function cardEl(c,si){
   const el=document.createElement('div');
   el.className='card';el.draggable=true;
 
-  const overdue = si===S_GRAV && c.gravadoAt && Date.now()>c.gravadoAt+PRAZO_DIAS*DAY;
+  const overdue = isOverdue(c,si);
   if(overdue || c.deliveryStatus==='late') el.classList.add('red');
   else if(c.deliveryStatus==='ontime') el.classList.add('green');
   else el.style.borderLeftColor=CCOR[c.classificacoes[0]]||'var(--dourado)';
@@ -764,33 +856,7 @@ function cardEl(c,si){
     redesHtml='<div class="redes">'+c.areas.map(a=>`<span class="rdot" style="background:${RCOR[a.rede]||'var(--bege)'}" title="${esc(a.rede)}${a.data?' · '+fmtISO(a.data):''}"></span>`).join('')+'</div>';
   }
 
-  let foot='';
-  if(si===S_AGEND){
-    let grava='';
-    if(c.dataGravacao){
-      const d=diasEntre(c.dataGravacao);
-      if(d>1) grava=`🎬 grava em ${d}d`;
-      else if(d===1) grava='🎬 grava amanhã';
-      else if(d===0) grava='🎬 grava hoje';
-      else grava=`🎬 grava há ${-d}d`;
-    }
-    foot=`<span class="pill status">● Agendado</span>`;
-    if(grava) foot+=`<span class="pill ${(c.dataGravacao&&diasEntre(c.dataGravacao)<=1)?'soon':'neutral'}">${grava}</span>`;
-  }else if(si===S_GRAV && c.gravadoAt){
-    if(overdue){
-      const late=Math.max(0,Math.ceil((Date.now()-(c.gravadoAt+PRAZO_DIAS*DAY))/DAY));
-      foot=`<span class="pill red">⚠ Atrasado há ${late} dia${late!==1?'s':''}</span>`;
-    }else{
-      const dl=c.gravadoAt+PRAZO_DIAS*DAY;
-      const left=Math.ceil((dl-Date.now())/DAY);
-      const cls=left<=1?'soon':'neutral';
-      foot=`<span class="pill ${cls}">⏱ Entrega até ${fmtTs(dl)}${left>0?' · faltam '+left+'d':(left===0?' · hoje':'')}</span>`;
-    }
-  }else{
-    if(c.deliveryStatus==='ontime') foot+=`<span class="pill green">✓ Entregue ${c.deliveryDays>0?c.deliveryDays+' dia'+(c.deliveryDays>1?'s':'')+' antes do prazo':'no prazo'}</span>`;
-    else if(c.deliveryStatus==='late') foot+=`<span class="pill red">⚠ Entregue com ${c.deliveryDays} dia${c.deliveryDays>1?'s':''} de atraso</span>`;
-    if(si===S_POST && c.postadoAt) foot+=`<span class="pill blue">🚀 Postado em ${fmtTs(c.postadoAt)}</span>`;
-  }
+  const foot=situacaoInfo(c,si).map(p=>`<span class="pill ${p.cls}">${p.text}</span>`).join('');
 
   el.innerHTML=`
     <div class="acts">
@@ -949,7 +1015,7 @@ function renderArchive(){
   }
   box.innerHTML=html;
   box.querySelectorAll('[data-restore]').forEach(b=>b.addEventListener('click',()=>{
-    const c=cards.find(x=>x.id===b.dataset.restore);if(c){c.archived=false;syncCard(c);render();}
+    const c=cards.find(x=>x.id===b.dataset.restore);if(c){c.archived=false;c.autoArchiveOptOut=true;syncCard(c);render();}
   }));
   box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
     if(confirm('Excluir definitivamente este card?')){const id=b.dataset.del;syncDeleteCard(id);cards=cards.filter(x=>x.id!==id);render();}
@@ -1004,6 +1070,7 @@ function openCardModal(card){
   document.getElementById('fCorretor').value=card?card.corretor:'';
   document.getElementById('fCodigo').value=card?card.codigo:'';
   document.getElementById('fGravacao').value=card?(card.dataGravacao||''):'';
+  document.getElementById('fDataEntrega').value=card?(card.dataEntrega||''):'';
   document.getElementById('fPubHora').value=card?(card.pubHora||''):'';
   document.getElementById('fLink').value=card?card.link:'';
   document.getElementById('fObs').value=card?card.obs:'';
@@ -1044,6 +1111,7 @@ function saveCardModal(){
     corretor:document.getElementById('fCorretor').value.trim(),
     codigo:document.getElementById('fCodigo').value.trim(),
     dataGravacao:document.getElementById('fGravacao').value,
+    dataEntrega:document.getElementById('fDataEntrega').value,
     pubHora:document.getElementById('fPubHora').value,
     link:document.getElementById('fLink').value.trim(),
     obs:document.getElementById('fObs').value.trim(),
@@ -1053,15 +1121,19 @@ function saveCardModal(){
   if(editingCardId){
     const c=cards.find(x=>x.id===editingCardId);
     const prevStage=c.stage;
+    const prevDataEntrega=c.dataEntrega;
     Object.assign(c,data);
     if(newStage!==prevStage) enterStage(c,newStage);
     else if(newStage===S_GRAV && !c.gravadoAt) c.gravadoAt=c.dataGravacao?new Date(c.dataGravacao+'T00:00:00').getTime():Date.now();
+    if(c.dataEntrega!==prevDataEntrega) applyDataEntrega(c);
     runAutomations();
     syncCard(c);
   }else{
     const c={id:crypto.randomUUID(),...data,stage:0,archived:false,createdAt:Date.now(),
-      agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null};
+      agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null,
+      autoArchiveOptOut:false};
     enterStage(c,newStage);
+    if(c.dataEntrega) applyDataEntrega(c);
     cards.push(c);
     runAutomations();
     syncNewCard(c);
@@ -1144,6 +1216,105 @@ function importBackup(file){
   reader.readAsText(file);
 }
 
+/* ---------- RELATÓRIO DE ACOMPANHAMENTO ---------- */
+function cardReportRow(c,si){
+  const destaque = (isOverdue(c,si)||c.deliveryStatus==='late') ? 'rep-late' : (c.deliveryStatus==='ontime' ? 'rep-ontime' : '');
+  const situacao = situacaoInfo(c,si).map(p=>p.text).join(' · ');
+  const pendentes = c.checklist.filter(i=>!i.done);
+  const redes = (c.areas||[]).filter(a=>a.data).map(a=>`${esc(a.rede)} ${fmtISO(a.data)}`);
+  const linhaCorretor = [c.corretor?esc(c.corretor):'', c.codigo?('código '+esc(c.codigo)):''].filter(Boolean).join(' · ');
+  return `
+    <article class="rep-card ${destaque}">
+      <h3>${esc(c.title)}</h3>
+      <div class="rep-meta">${c.classificacoes.map(esc).join(' · ')}</div>
+      ${linhaCorretor?`<div class="rep-meta">${linhaCorretor}</div>`:''}
+      ${c.dataGravacao?`<div class="rep-meta">Gravação em ${fmtISO(c.dataGravacao)}</div>`:''}
+      ${c.dataEntrega?`<div class="rep-meta">Entrega em ${fmtISO(c.dataEntrega)}</div>`:''}
+      ${situacao?`<div class="rep-status">${situacao}</div>`:''}
+      ${redes.length?`<div class="rep-meta">Publicações: ${redes.join(' · ')}</div>`:''}
+      ${pendentes.length?`<div class="rep-check"><b>Checklist pendente</b><ul>${pendentes.map(i=>`<li>${esc(i.text)}</li>`).join('')}</ul></div>`:''}
+      ${c.obs?`<div class="rep-obs">${esc(c.obs)}</div>`:''}
+    </article>`;
+}
+function exportReport(){
+  const ativos=cards.filter(c=>!c.archived);
+  const porEtapa=STAGES.map((st,si)=>({
+    st,si,list:ativos.filter(c=>c.stage===si).sort((a,b)=>urgencyKey(a,si)-urgencyKey(b,si)),
+  })).filter(g=>g.list.length>0);
+  const atrasados=ativos.filter(c=>isOverdue(c,c.stage)).length;
+  const entreguesOntime=ativos.filter(c=>c.deliveryStatus==='ontime').length;
+  const entreguesLate=ativos.filter(c=>c.deliveryStatus==='late').length;
+  const porEtapaResumo=STAGES.map((st,si)=>({label:st.label,n:ativos.filter(c=>c.stage===si).length})).filter(e=>e.n>0);
+  const metasResumo=METAS.map(m=>({...m,n:ativos.filter(c=>c.classificacoes.includes(m.classif)&&c.agendadoAt&&sameMonth(c.agendadoAt)).length}));
+  const dataGeracao=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const nomeArquivo='acompanhamento-gravacoes-'+todayISO();
+
+  const secoesHtml=porEtapa.map(g=>`
+    <section class="rep-sec">
+      <h2>${g.st.emoji} ${esc(g.st.label)}</h2>
+      ${g.list.map(c=>cardReportRow(c,g.si)).join('')}
+    </section>`).join('');
+
+  const html=`<!doctype html>
+<html lang="pt-BR"><head><meta charset="UTF-8">
+<title>${esc(nomeArquivo)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --creme:#F7F4EE;--branco:#FFFFFF;--bege:#E6E2DB;--dourado:#C89737;
+    --grafite:#474342;--muted:#8A857F;
+    --vermelho:#B23A48;--vermelho-bg:#F7E4E6;
+    --verde:#3F7A54;--verde-bg:#E6F2EA;
+    --serif:'Playfair Display',Georgia,serif;--sans:'Montserrat',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--grafite);background:var(--creme);margin:0;padding:28px}
+  h1{font-family:var(--serif);color:var(--dourado);font-size:24px;margin-bottom:2px}
+  .rep-data{font-size:11px;color:var(--muted);margin-bottom:20px}
+  .rep-resumo{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+  .rep-chip{background:var(--branco);border:1px solid var(--bege);border-radius:10px;padding:10px 14px;min-width:104px}
+  .rep-chip .n{font-family:var(--serif);font-size:19px;font-weight:700}
+  .rep-chip .l{font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .rep-sec h2{font-family:var(--serif);font-size:16px;border-bottom:1px solid var(--bege);padding-bottom:6px;margin:22px 0 10px}
+  .rep-card{background:var(--branco);border:1px solid var(--bege);border-left:3px solid var(--dourado);border-radius:8px;padding:10px 14px;margin-bottom:8px;page-break-inside:avoid}
+  .rep-card.rep-late{border-left-color:var(--vermelho);background:var(--vermelho-bg)}
+  .rep-card.rep-ontime{border-left-color:var(--verde);background:var(--verde-bg)}
+  .rep-card h3{font-family:var(--serif);font-size:14px;margin-bottom:4px}
+  .rep-meta{font-size:11px;color:var(--muted);margin-bottom:2px}
+  .rep-status{font-size:11.5px;font-weight:600;margin:4px 0}
+  .rep-check{font-size:11px;margin-top:4px}
+  .rep-check ul{margin:2px 0 0 16px;padding:0}
+  .rep-obs{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic}
+  @media print{
+    body{background:#fff;padding:0 12mm}
+    @page{size:A4;margin:14mm}
+    .rep-card{box-shadow:none}
+  }
+</style></head>
+<body>
+  <h1>Acompanhamento de gravações</h1>
+  <div class="rep-data">Cris Maciel Consultoria Imobiliária, gerado em ${dataGeracao}</div>
+  <div class="rep-resumo">
+    <div class="rep-chip"><div class="n">${ativos.length}</div><div class="l">Ativos</div></div>
+    ${porEtapaResumo.map(e=>`<div class="rep-chip"><div class="n">${e.n}</div><div class="l">${esc(e.label)}</div></div>`).join('')}
+    <div class="rep-chip"><div class="n">${atrasados}</div><div class="l">Atrasados</div></div>
+    <div class="rep-chip"><div class="n">${entreguesOntime}</div><div class="l">No prazo</div></div>
+    <div class="rep-chip"><div class="n">${entreguesLate}</div><div class="l">Com atraso</div></div>
+    ${metasResumo.map(m=>`<div class="rep-chip"><div class="n">${m.n}/${m.target}</div><div class="l">${esc(m.label)}</div></div>`).join('')}
+  </div>
+  ${secoesHtml}
+</body></html>`;
+
+  const win=window.open('','_blank');
+  if(!win){ alert('Não foi possível abrir o relatório. Verifique se o navegador bloqueou a nova janela.'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.onload=()=>{ setTimeout(()=>{ win.focus(); win.print(); }, 350); };
+}
+
 /* ---------- SEED ---------- */
 function seed(){
   const now=Date.now();
@@ -1155,8 +1326,9 @@ function seed(){
       dataGravacao:o.dataGravacao||'',areas:o.areas||[],pubHora:o.pubHora||'',link:o.link||'',obs:o.obs||'',
       checklist:cl,archived:!!o.archived,stage:o.stage,createdAt:now,
       agendadoAt:o.agendadoAt!==undefined?o.agendadoAt:null,gravadoAt:o.gravadoAt||null,
-      entregueAt:o.entregueAt||null,postadoAt:o.postadoAt||null,
-      deliveryStatus:o.deliveryStatus||null,deliveryDays:o.deliveryDays!==undefined?o.deliveryDays:null};
+      dataEntrega:o.dataEntrega||'',entregueAt:o.entregueAt||null,postadoAt:o.postadoAt||null,
+      deliveryStatus:o.deliveryStatus||null,deliveryDays:o.deliveryDays!==undefined?o.deliveryDays:null,
+      autoArchiveOptOut:false};
   };
   const cardsSeed=[
     base({title:'Tour Condomínio Maria José',classificacoes:['Vídeo longo / YouTube'],corretor:'A definir',codigo:'MJ102',stage:S_PROD}),
@@ -1204,6 +1376,7 @@ document.getElementById('iTitulo').addEventListener('input',e=>e.target.style.bo
 
 document.getElementById('fClass').addEventListener('change',render);
 document.getElementById('fSearch').addEventListener('input',render);
+document.getElementById('btnReport').addEventListener('click',exportReport);
 document.getElementById('btnExport').addEventListener('click',exportBackup);
 document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('fileImport').click());
 document.getElementById('fileImport').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value='';});
