@@ -490,7 +490,7 @@ function enterStage(c,ns){
   const prev=c.stage;
   c.stage=ns;
   if(ns>=S_AGEND && !c.agendadoAt) c.agendadoAt=Date.now();
-  if(ns===S_GRAV && !c.gravadoAt){
+  if(ns>=S_GRAV && !c.gravadoAt){
     c.gravadoAt = c.dataGravacao ? new Date(c.dataGravacao+'T00:00:00').getTime() : Date.now();
   }
   if(ns===S_ENTR && prev!==S_ENTR){
@@ -572,6 +572,13 @@ function backfillDataEntrega(list){
       changed.push(c);
     }
     if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
+    // Cards criados indo direto para uma etapa a partir de Gravado, sem
+    // passar por ela, ficavam sem gravadoAt e o prazo saia sempre "no prazo".
+    if(!c.gravadoAt && c.dataGravacao && c.stage>=S_GRAV){
+      c.gravadoAt=new Date(c.dataGravacao+'T00:00:00').getTime();
+      if(c.dataEntrega) applyDataEntrega(c);
+      if(changed.indexOf(c)===-1) changed.push(c);
+    }
   });
   return changed;
 }
