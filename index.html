@@ -210,6 +210,11 @@
   .chip-select{display:flex;gap:7px;flex-wrap:wrap}
   .chip-opt{border:1px solid var(--linha);background:var(--creme);border-radius:20px;padding:7px 13px;font-size:12px;font-weight:600;color:var(--muted)}
   .chip-opt.on{background:var(--dourado);color:#fff;border-color:var(--dourado)}
+  .chip-opt.preset.on{background:var(--grafite);border-color:var(--grafite)}
+  .rep-contagem{background:var(--creme);border:1px solid var(--linha);border-radius:10px;
+    padding:11px 14px;font-size:12.5px;margin-bottom:4px}
+  .rep-contagem b{font-family:var(--serif);font-size:16px;color:var(--dourado)}
+  .rep-contagem.vazio{border-color:var(--ambar);background:var(--ambar-bg);color:var(--ambar)}
 
   .areas-editor{border:1px solid var(--linha);border-radius:10px;padding:8px;background:var(--creme)}
   .area-row{display:flex;gap:7px;align-items:center;padding:5px 6px;margin-bottom:5px}
@@ -249,6 +254,18 @@
   .loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--creme);z-index:99}
   .loading .name{font-family:var(--serif);color:var(--dourado);font-size:22px}
   #fileImport{display:none}
+
+  /* BALÃO DE DETALHE */
+  .tip{position:fixed;z-index:90;background:var(--branco);border:1px solid var(--linha);
+    border-radius:10px;padding:10px 13px;box-shadow:0 8px 24px rgba(71,67,66,.16);
+    max-width:300px;pointer-events:none;opacity:0;transition:opacity .12s;display:none}
+  .tip.on{opacity:1;display:block}
+  .tip .tip-h{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+    font-weight:700;margin-bottom:6px}
+  .tip ul{margin:0;padding-left:15px}
+  .tip li{font-size:11.5px;line-height:1.45;color:var(--grafite);margin-bottom:2px}
+  .tip .tip-mais{font-size:10.5px;color:var(--muted);font-style:italic;margin-top:4px}
+  [data-tip]{cursor:help}
 
   @media (max-width:680px){
     .toolbar{width:100%;margin-left:0}
@@ -332,12 +349,13 @@
           <input type="date" id="fGravacao">
         </div>
       </div>
-      <div class="hint-inline" style="margin-top:-9px;margin-bottom:15px">Quando essa data passar, o card vai sozinho de <b>Agendado</b> para <b>Gravado</b>. A partir daí começam a contar os 5 dias de prazo de entrega.</div>
+      <div class="hint-inline" style="margin-top:-9px;margin-bottom:15px">Data em que o vídeo foi ou será gravado. É dela que saem os 5 dias de prazo, então preencha também quando a gravação já aconteceu. Se a data for futura, o card sai sozinho de <b>Agendado</b> para <b>Gravado</b>.</div>
       <div class="field">
         <label>Data de entrega</label>
         <input type="date" id="fDataEntrega">
       </div>
       <div class="hint-inline" style="margin-top:-9px;margin-bottom:15px">Preencher esta data move o card para <b>Entregue</b> e recalcula o prazo na hora. Deixe em branco para desfazer a entrega.</div>
+      <div class="hint-inline" id="mAvisoPrazo" style="display:none;margin-top:-11px;margin-bottom:15px;color:var(--ambar);background:var(--ambar-bg);border-radius:8px;padding:8px 10px">Sem a <b>data da gravação</b> não dá para contar os 5 dias, então este card fica sem situação de prazo. Preencha se quiser acompanhar atraso.</div>
       <div class="field">
         <label>Horário padrão de publicação</label>
         <input type="time" id="fPubHora" style="max-width:160px">
@@ -409,6 +427,64 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL RELATÓRIO -->
+<div class="overlay" id="overlayReport">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Exportar relatório</h2>
+      <button class="x" id="rClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Para que serve este envio</label>
+        <div class="chip-select" id="rPresets"></div>
+        <div class="hint-inline">Escolha um modelo pronto ou ajuste os filtros abaixo do seu jeito.</div>
+      </div>
+      <div class="field">
+        <label>Etapas incluídas</label>
+        <div class="chip-select" id="rStages"></div>
+      </div>
+      <div class="field">
+        <label>Classificação</label>
+        <div class="chip-select" id="rClassif"></div>
+        <div class="hint-inline">Nenhuma marcada significa todas.</div>
+      </div>
+      <div class="field row">
+        <div>
+          <label>Corretor</label>
+          <select id="rCorretor"></select>
+        </div>
+        <div>
+          <label>Situação de prazo</label>
+          <select id="rPrazo">
+            <option value="">Todas</option>
+            <option value="atrasado">Atrasado agora, sem entregar</option>
+            <option value="pendente">Ainda não entregue</option>
+            <option value="late">Entregue com atraso</option>
+            <option value="ontime">Entregue no prazo</option>
+            <option value="problema">Qualquer atraso, agora ou no passado</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Incluir no documento</label>
+        <div class="chip-select" id="rIncludes"></div>
+      </div>
+      <div class="field">
+        <label>Título do documento</label>
+        <input id="rTitulo" placeholder="Acompanhamento de gravações">
+      </div>
+      <div class="rep-contagem" id="rContagem"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" id="rCancel">Cancelar</button>
+      <button class="btn-primary" id="rGerar">Gerar relatório</button>
+    </div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
 
 <div class="foot-note">
   <span id="modeNote" style="display:none">Modo local, sem sincronização</span>
@@ -485,45 +561,64 @@ function fmtTs(ts){const d=new Date(ts);return d.toLocaleDateString('pt-BR',{day
 function sameMonth(ts){const d=new Date(ts),n=new Date();return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear()}
 function diasEntre(iso){const hoje=new Date(todayISO()+'T00:00:00').getTime();const alvo=new Date(iso+'T00:00:00').getTime();return Math.round((alvo-hoje)/DAY)}
 
+/* ---------- PRAZO DE ENTREGA ----------
+   Duas fontes de verdade, nesta ordem:
+     dataEntrega  manda na entrega    -> entregueAt deriva dela
+     dataGravacao manda no prazo      -> prazoEntrega deriva dela
+   gravadoAt virou apenas registro historico, usado como ultimo recurso para
+   cards antigos que nunca tiveram a data preenchida. Sem nenhuma das duas o
+   prazo e incalculavel e o sistema NAO afirma nada sobre cumprimento. */
+function tsDia(iso){ return iso ? new Date(iso+'T00:00:00').getTime() : null; }
+function prazoEntrega(c){
+  const base = c.dataGravacao ? tsDia(c.dataGravacao) : (c.gravadoAt || null);
+  return base===null ? null : base+PRAZO_DIAS*DAY;
+}
+function computeDelivery(c){
+  const dl=prazoEntrega(c);
+  if(c.entregueAt==null || dl===null){ c.deliveryStatus=null; c.deliveryDays=null; return; }
+  if(c.entregueAt<=dl){ c.deliveryStatus='ontime'; c.deliveryDays=Math.max(0,Math.ceil((dl-c.entregueAt)/DAY)); }
+  else { c.deliveryStatus='late'; c.deliveryDays=Math.ceil((c.entregueAt-dl)/DAY); }
+}
+/* Funil unico: qualquer mudanca em datas passa por aqui e recalcula tudo. */
+function applyDataEntrega(c){
+  if(c.dataGravacao) c.gravadoAt=tsDia(c.dataGravacao);
+  if(c.dataEntrega){
+    c.entregueAt=tsDia(c.dataEntrega);
+    if(c.stage<S_ENTR) c.stage=S_ENTR;
+  }else{
+    c.entregueAt=null;
+  }
+  computeDelivery(c);
+}
+
 /* ---------- STAGE TRANSITIONS ---------- */
 function enterStage(c,ns){
   const prev=c.stage;
   c.stage=ns;
   if(ns>=S_AGEND && !c.agendadoAt) c.agendadoAt=Date.now();
-  if(ns>=S_GRAV && !c.gravadoAt){
-    c.gravadoAt = c.dataGravacao ? new Date(c.dataGravacao+'T00:00:00').getTime() : Date.now();
-  }
-  if(ns===S_ENTR && prev!==S_ENTR){
-    if(!c.dataEntrega) c.dataEntrega=todayISO();
-    applyDataEntrega(c);
-  }
-  if(ns!==S_ENTR && ns<S_ENTR){
-    c.dataEntrega='';
-    applyDataEntrega(c);
-  }
+
+  // Entrega: carimba hoje so ao ENTRAR em Entregue, limpa so em rebaixamento real.
+  if(ns===S_ENTR && prev!==S_ENTR && !c.dataEntrega) c.dataEntrega=todayISO();
+  if(ns<S_ENTR && prev>=S_ENTR) c.dataEntrega='';
+
+  // Prazo: a data informada manda. O relogio so vale ao entrar em Gravado sem
+  // entrega registrada, que e o caso legitimo de "acabei de gravar". Pular
+  // direto para Entregue significa gravacao num passado desconhecido, entao o
+  // prazo fica indefinido em vez de ser inventado.
+  if(c.dataGravacao) c.gravadoAt=tsDia(c.dataGravacao);
+  else if(ns===S_GRAV && !c.gravadoAt && !c.dataEntrega) c.gravadoAt=Date.now();
+  else if(ns<S_GRAV) c.gravadoAt=null;
+
   if(ns===S_POST && !c.postadoAt) c.postadoAt=Date.now();
   if(ns<S_POST) c.postadoAt=null;
-}
-/* dataEntrega e a fonte de verdade da entrega. entregueAt, deliveryStatus e
-   deliveryDays sempre derivam dela, nunca do instante em que o card e movido. */
-function applyDataEntrega(c){
-  if(c.dataEntrega){
-    c.entregueAt=new Date(c.dataEntrega+'T00:00:00').getTime();
-    computeDelivery(c);
-    if(c.stage<S_ENTR) c.stage=S_ENTR;
-  }else{
-    c.entregueAt=null; c.deliveryStatus=null; c.deliveryDays=null;
-  }
-}
-function computeDelivery(c){
-  const dl = c.gravadoAt ? c.gravadoAt+PRAZO_DIAS*DAY : c.entregueAt;
-  if(c.entregueAt<=dl){ c.deliveryStatus='ontime'; c.deliveryDays=Math.max(0,Math.ceil((dl-c.entregueAt)/DAY)); }
-  else { c.deliveryStatus='late'; c.deliveryDays=Math.ceil((c.entregueAt-dl)/DAY); }
+
+  applyDataEntrega(c);
 }
 
 /* ---------- AUTOMAÇÕES POR TEMPO ---------- */
 function isOverdue(c,si){
-  return si===S_GRAV && c.gravadoAt && Date.now()>c.gravadoAt+PRAZO_DIAS*DAY;
+  const dl=prazoEntrega(c);
+  return si===S_GRAV && dl!==null && Date.now()>dl;
 }
 function menorDataPublicacao(c){
   if(!c.areas||!c.areas.length) return null;
@@ -560,28 +655,24 @@ function runAutomations(){
   });
   return changed;
 }
-/* Cards salvos antes do campo dataEntrega existir tinham entregueAt sem uma
-   data de origem editavel. Deriva dataEntrega a partir dele, uma unica vez. */
-function backfillDataEntrega(list){
-  const changed=[];
-  list.forEach(c=>{
-    if(c.dataEntrega===undefined) c.dataEntrega='';
-    if(!c.dataEntrega && c.entregueAt){
-      const d=new Date(c.entregueAt);
-      c.dataEntrega=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-      changed.push(c);
-    }
-    if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
-    // Cards criados indo direto para uma etapa a partir de Gravado, sem
-    // passar por ela, ficavam sem gravadoAt e o prazo saia sempre "no prazo".
-    if(!c.gravadoAt && c.dataGravacao && c.stage>=S_GRAV){
-      c.gravadoAt=new Date(c.dataGravacao+'T00:00:00').getTime();
-      if(c.dataEntrega) applyDataEntrega(c);
-      if(changed.indexOf(c)===-1) changed.push(c);
-    }
-  });
-  return changed;
+/* Reconciliacao idempotente: recalcula o card a partir das datas informadas e
+   devolve true se algo mudou. Roda em todo ponto de entrada de dados, entao
+   cards salvos com status errado se corrigem sozinhos na primeira abertura. */
+function reconcileCard(c){
+  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays].join('|');
+  if(c.dataEntrega===undefined) c.dataEntrega='';
+  if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
+  // Legado: entregueAt sem uma data editavel de origem.
+  if(!c.dataEntrega && c.entregueAt){
+    const d=new Date(c.entregueAt);
+    c.dataEntrega=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  // Carimbo comprovadamente invalido: nao se entrega antes de gravar.
+  if(!c.dataGravacao && c.gravadoAt && c.entregueAt && c.entregueAt<c.gravadoAt) c.gravadoAt=null;
+  applyDataEntrega(c);
+  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays].join('|');
 }
+function reconcileAll(list){ return list.filter(reconcileCard); }
 
 /* ---------- NUVEM (Supabase) ---------- */
 let cloud=false;
@@ -652,6 +743,9 @@ function subscribeRealtime(){
       if(payload.eventType==='DELETE'){ cards=cards.filter(c=>c.id!==payload.old.id); }
       else{
         const c=rowToCard(payload.new);
+        // Reconcilia so para exibicao, sem devolver escrita ao banco, para nao
+        // criar eco entre os dois navegadores. Quem escreve ja reconcilia antes.
+        reconcileCard(c);
         const i=cards.findIndex(x=>x.id===c.id);
         if(i>=0) cards[i]=c; else cards.push(c);
       }
@@ -691,9 +785,9 @@ async function load(){
   }else{
     loadLocal();
   }
-  const backfilled=backfillDataEntrega(cards);
-  if(backfilled.length){
-    if(cloud) backfilled.forEach(syncCard); else persistLocal();
+  const ajustados=reconcileAll(cards);
+  if(ajustados.length){
+    if(cloud) ajustados.forEach(syncCard); else persistLocal();
   }
   document.getElementById('modeNote').style.display=cloud?'none':'inline';
 }
@@ -742,16 +836,61 @@ function persistLocal(){
 function urgencyKey(c,si){
   if(si===S_PROD) return c.createdAt;
   if(si===S_AGEND) return c.dataGravacao?new Date(c.dataGravacao+'T00:00:00').getTime():Infinity;
-  if(si===S_GRAV) return (c.gravadoAt||Infinity)+PRAZO_DIAS*DAY;
+  if(si===S_GRAV){ const dl=prazoEntrega(c); return dl===null?Infinity:dl; }
   if(si===S_ENTR) return -(c.entregueAt||0);
   if(si===S_POST) return -(c.postadoAt||0);
   return 0;
+}
+
+/* ---------- BALÃO DE DETALHE ----------
+   Passar o mouse num contador mostra quais conteudos entraram naquela conta. */
+const TIPS={};
+let tipSeq=0;
+function tipReset(){ for(const k in TIPS) delete TIPS[k]; }
+function tipRegister(titulo,itens,limite){
+  if(!itens || !itens.length) return '';
+  const max=limite||14;
+  const id='t'+(++tipSeq);
+  const mostrados=itens.slice(0,max);
+  const resto=itens.length-mostrados.length;
+  TIPS[id]=`<div class="tip-h">${esc(titulo)}</div><ul>${mostrados.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`+
+    (resto>0?`<div class="tip-mais">e mais ${resto} ${resto===1?'conteúdo':'conteúdos'}</div>`:'');
+  return ` data-tip="${id}"`;
+}
+function posicionaTip(alvo){
+  const tip=document.getElementById('tip');
+  const r=alvo.getBoundingClientRect();
+  const t=tip.getBoundingClientRect();
+  let left=r.left+r.width/2-t.width/2;
+  let top=r.bottom+8;
+  if(top+t.height>window.innerHeight-8) top=r.top-t.height-8;
+  left=Math.max(8,Math.min(left,window.innerWidth-t.width-8));
+  tip.style.left=left+'px';
+  tip.style.top=Math.max(8,top)+'px';
+}
+function initTips(){
+  const tip=document.getElementById('tip');
+  document.addEventListener('mouseover',e=>{
+    const alvo=e.target.closest?e.target.closest('[data-tip]'):null;
+    if(!alvo) return;
+    const html=TIPS[alvo.dataset.tip];
+    if(!html) return;
+    tip.innerHTML=html;
+    tip.classList.add('on');
+    posicionaTip(alvo);
+  });
+  document.addEventListener('mouseout',e=>{
+    const alvo=e.target.closest?e.target.closest('[data-tip]'):null;
+    if(alvo) tip.classList.remove('on');
+  });
+  window.addEventListener('scroll',()=>tip.classList.remove('on'),true);
 }
 
 /* ---------- RENDER ROOT ---------- */
 function currentFilterClass(){return document.getElementById('fClass').value}
 function currentSearch(){return document.getElementById('fSearch').value.trim().toLowerCase()}
 function render(){
+  tipReset();
   document.getElementById('board').style.display = view==='board'?'flex':'none';
   document.getElementById('ideasView').style.display = view==='ideas'?'block':'none';
   document.getElementById('calView').style.display = view==='cal'?'block':'none';
@@ -769,10 +908,12 @@ function render(){
 
 function renderAlertbar(){
   const bar=document.getElementById('alertbar');
-  const atrasados=cards.filter(c=>!c.archived && isOverdue(c,c.stage)).length;
-  if(atrasados>0){
+  const atrasados=cards.filter(c=>!c.archived && isOverdue(c,c.stage));
+  const n=atrasados.length;
+  if(n>0){
     bar.classList.add('on');
-    bar.textContent=`⚠ ${atrasados} conteúdo${atrasados>1?'s':''} atrasado${atrasados>1?'s':''} na entrega`;
+    const tip=tipRegister('Atrasados na entrega',atrasados.map(c=>c.title));
+    bar.innerHTML=`<span${tip}>⚠ ${n} conteúdo${n>1?'s':''} atrasado${n>1?'s':''} na entrega</span>`;
   }else bar.classList.remove('on');
 }
 
@@ -788,7 +929,8 @@ function renderBoard(){
     list.sort((a,b)=>urgencyKey(a,si)-urgencyKey(b,si));
     const col=document.createElement('div');
     col.className='col';
-    col.innerHTML=`<div class="col-head"><span class="emoji">${st.emoji}</span><h3>${st.label}</h3><span class="count">${list.length}</span></div>`;
+    const tipCol=tipRegister(st.label,list.map(c=>c.title));
+    col.innerHTML=`<div class="col-head"><span class="emoji">${st.emoji}</span><h3>${st.label}</h3><span class="count"${tipCol}>${list.length}</span></div>`;
     const body=document.createElement('div');
     body.className='col-body';body.dataset.stage=si;
     body.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('drop')});
@@ -822,12 +964,14 @@ function situacaoInfo(c,si){
     }
     parts.push({text:'● Agendado',cls:'status'});
     if(grava) parts.push({text:grava,cls:(c.dataGravacao&&diasEntre(c.dataGravacao)<=1)?'soon':'neutral'});
-  }else if(si===S_GRAV && c.gravadoAt){
-    if(overdue){
-      const late=Math.max(0,Math.ceil((Date.now()-(c.gravadoAt+PRAZO_DIAS*DAY))/DAY));
+  }else if(si===S_GRAV){
+    const dl=prazoEntrega(c);
+    if(dl===null){
+      parts.push({text:'⏱ Sem data de gravação · prazo não definido',cls:'neutral'});
+    }else if(overdue){
+      const late=Math.max(0,Math.ceil((Date.now()-dl)/DAY));
       parts.push({text:`⚠ Atrasado há ${late} dia${late!==1?'s':''}`,cls:'red'});
     }else{
-      const dl=c.gravadoAt+PRAZO_DIAS*DAY;
       const left=Math.ceil((dl-Date.now())/DAY);
       const cls=left<=1?'soon':'neutral';
       parts.push({text:`⏱ Entrega até ${fmtTs(dl)}${left>0?' · faltam '+left+'d':(left===0?' · hoje':'')}`,cls});
@@ -835,6 +979,7 @@ function situacaoInfo(c,si){
   }else{
     if(c.deliveryStatus==='ontime') parts.push({text:`✓ Entregue ${c.deliveryDays>0?c.deliveryDays+' dia'+(c.deliveryDays>1?'s':'')+' antes do prazo':'no prazo'}`,cls:'green'});
     else if(c.deliveryStatus==='late') parts.push({text:`⚠ Entregue com ${c.deliveryDays} dia${c.deliveryDays>1?'s':''} de atraso`,cls:'red'});
+    else if(c.entregueAt) parts.push({text:`📦 Entregue em ${fmtTs(c.entregueAt)} · sem data de gravação, prazo não calculado`,cls:'neutral'});
     if(si===S_POST && c.postadoAt) parts.push({text:`🚀 Postado em ${fmtTs(c.postadoAt)}`,cls:'blue'});
   }
   return parts;
@@ -895,11 +1040,13 @@ function cardEl(c,si){
 function renderMetas(){
   const box=document.getElementById('metas');
   box.innerHTML=METAS.map(m=>{
-    const n=cards.filter(c=>c.classificacoes.includes(m.classif) && c.agendadoAt && sameMonth(c.agendadoAt)).length;
+    const feitos=cards.filter(c=>c.classificacoes.includes(m.classif) && c.agendadoAt && sameMonth(c.agendadoAt));
+    const n=feitos.length;
     let cls='';
     if(n>=m.target) cls='hit';
     else if(m.classif==='Internacional'&&n===0) cls='alert';
-    return `<div class="meta-chip ${cls}"><div class="n"><b>${n}</b>/${m.target}</div><div class="l">${m.label}</div></div>`;
+    const tip=tipRegister(m.classif+' neste mês',feitos.map(c=>c.title));
+    return `<div class="meta-chip ${cls}"${tip}><div class="n"><b>${n}</b>/${m.target}</div><div class="l">${m.label}</div></div>`;
   }).join('');
 }
 
@@ -934,9 +1081,10 @@ function renderIdeas(){
     if(!idea) return;
     const classificacoes=CLASSIF.includes(idea.formato)?[idea.formato]:[];
     const c={id:crypto.randomUUID(),title:idea.titulo,classificacoes,corretor:'',codigo:'',
-      dataGravacao:'',areas:[],pubHora:'',link:'',obs:idea.descricao||'',
+      dataGravacao:'',dataEntrega:'',areas:[],pubHora:'',link:'',obs:idea.descricao||'',
       checklist:checklistFor(classificacoes),stage:S_PROD,archived:false,createdAt:Date.now(),
-      agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null};
+      agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null,
+      autoArchiveOptOut:false};
     cards.push(c);
     ideas=ideas.filter(x=>x.id!==idea.id);
     syncNewCard(c);syncDeleteIdea(idea.id);
@@ -1085,8 +1233,19 @@ function openCardModal(card){
   renderAreasEditor();
   draftChecklist=card?card.checklist.map(i=>({...i})):checklistFor([]);
   renderChecklistEditor();
+  atualizaAvisoPrazo();
   document.getElementById('overlay').classList.add('open');
   document.getElementById('fTitle').focus();
+}
+/* Aviso nao bloqueante: existe conteudo legitimo sem gravacao, como o
+   Internacional montado a partir do Drive, entao o campo nao e obrigatorio.
+   O que nao pode e o sistema inventar um prazo e declarar "no prazo". */
+function atualizaAvisoPrazo(){
+  const semGravacao=!document.getElementById('fGravacao').value;
+  const temEntrega=!!document.getElementById('fDataEntrega').value;
+  const etapa=+document.getElementById('fStage').value;
+  document.getElementById('mAvisoPrazo').style.display=
+    (semGravacao && (temEntrega || etapa>=S_GRAV)) ? 'block' : 'none';
 }
 function closeCardModal(){document.getElementById('overlay').classList.remove('open');editingCardId=null;}
 
@@ -1128,11 +1287,12 @@ function saveCardModal(){
   if(editingCardId){
     const c=cards.find(x=>x.id===editingCardId);
     const prevStage=c.stage;
-    const prevDataEntrega=c.dataEntrega;
     Object.assign(c,data);
+    // enterStage ja termina em applyDataEntrega. Quando a etapa nao muda, o
+    // recalculo precisa acontecer mesmo assim, para que corrigir so uma data
+    // propague para o status de prazo.
     if(newStage!==prevStage) enterStage(c,newStage);
-    else if(newStage===S_GRAV && !c.gravadoAt) c.gravadoAt=c.dataGravacao?new Date(c.dataGravacao+'T00:00:00').getTime():Date.now();
-    if(c.dataEntrega!==prevDataEntrega) applyDataEntrega(c);
+    else applyDataEntrega(c);
     runAutomations();
     syncCard(c);
   }else{
@@ -1140,7 +1300,6 @@ function saveCardModal(){
       agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null,
       autoArchiveOptOut:false};
     enterStage(c,newStage);
-    if(c.dataEntrega) applyDataEntrega(c);
     cards.push(c);
     runAutomations();
     syncNewCard(c);
@@ -1205,6 +1364,7 @@ function importBackup(file){
       if(!Array.isArray(data.cards)||!Array.isArray(data.ideas)) throw new Error('formato inválido');
       const aviso=cloud?'Importar este backup substitui os dados atuais para todo mundo. Continuar?':'Importar este backup substitui os dados atuais. Continuar?';
       if(!confirm(aviso)) return;
+      reconcileAll(data.cards);
       if(cloud){
         const nulo='00000000-0000-0000-0000-000000000000';
         await sb.from('cards').delete().neq('id',nulo);
@@ -1224,11 +1384,76 @@ function importBackup(file){
 }
 
 /* ---------- RELATÓRIO DE ACOMPANHAMENTO ---------- */
-function cardReportRow(c,si){
+/* Modelos prontos: cada um responde a uma pergunta que o Breno faz na pratica.
+   stages null significa todas as etapas. */
+const REPORT_PRESETS=[
+  {key:'tudo',label:'Panorama completo',descricao:'todos os conteúdos em andamento',
+   stages:null,prazo:''},
+  {key:'falta',label:'O que falta entregar',descricao:'conteúdos ainda não entregues',
+   stages:[S_PROD,S_AGEND,S_GRAV],prazo:'pendente'},
+  {key:'atraso',label:'Atrasados',descricao:'conteúdos com atraso na entrega',
+   stages:null,prazo:'problema'},
+  {key:'entregues',label:'Já entregues',descricao:'conteúdos entregues',
+   stages:[S_ENTR,S_POST],prazo:''},
+  {key:'publicados',label:'Publicados',descricao:'conteúdos já no ar',
+   stages:[S_POST],prazo:''},
+];
+const REPORT_INCLUDES=[
+  {key:'resumo',label:'Resumo em números',padrao:true},
+  {key:'obs',label:'Observações',padrao:true},
+  {key:'checklist',label:'Checklist pendente',padrao:false},
+  {key:'link',label:'Link do vídeo',padrao:false},
+];
+let repFiltro=null;
+function repFiltroPadrao(){
+  const inc={};
+  REPORT_INCLUDES.forEach(i=>inc[i.key]=i.padrao);
+  return {preset:'tudo',stages:null,classif:[],corretor:'',prazo:'',includes:inc,titulo:''};
+}
+/* Classifica o card numa das situacoes de prazo oferecidas no filtro. */
+function situacaoPrazo(c){
+  if(c.deliveryStatus==='late') return 'late';
+  if(c.deliveryStatus==='ontime') return 'ontime';
+  if(c.entregueAt) return 'entregue';
+  return isOverdue(c,c.stage)?'atrasado':'pendente';
+}
+function repAplicaFiltro(f){
+  return cards.filter(c=>{
+    if(c.archived) return false;
+    if(f.stages && !f.stages.includes(c.stage)) return false;
+    if(f.classif.length && !f.classif.some(cl=>c.classificacoes.includes(cl))) return false;
+    if(f.corretor && (c.corretor||'')!==f.corretor) return false;
+    if(f.prazo){
+      const s=situacaoPrazo(c);
+      if(f.prazo==='problema'){ if(s!=='late' && s!=='atrasado') return false; }
+      else if(f.prazo==='pendente'){ if(s!=='pendente' && s!=='atrasado') return false; }
+      else if(s!==f.prazo) return false;
+    }
+    return true;
+  });
+}
+/* Frase curta que vai impressa no documento, para quem recebe saber o recorte. */
+function repDescricao(f){
+  const partes=[];
+  const preset=REPORT_PRESETS.find(p=>p.key===f.preset);
+  if(preset && preset.key!=='tudo') partes.push(preset.descricao);
+  else if(!preset){
+    if(f.stages) partes.push('etapas: '+f.stages.map(i=>STAGES[i].label).join(', '));
+    const rot={atrasado:'atrasados sem entregar',pendente:'ainda não entregues',
+      late:'entregues com atraso',ontime:'entregues no prazo',problema:'com atraso'};
+    if(f.prazo) partes.push(rot[f.prazo]);
+  }
+  if(f.classif.length) partes.push(f.classif.join(', '));
+  if(f.corretor) partes.push('corretor '+f.corretor);
+  return partes.length?partes.join(' · '):'todos os conteúdos em andamento';
+}
+
+function cardReportRow(c,si,inc){
   const destaque = (isOverdue(c,si)||c.deliveryStatus==='late') ? 'rep-late' : (c.deliveryStatus==='ontime' ? 'rep-ontime' : '');
   const situacao = situacaoInfo(c,si).map(p=>p.text).join(' · ');
   const redes = (c.areas||[]).filter(a=>a.data).map(a=>`${esc(a.rede)} ${fmtISO(a.data)}`);
   const linhaCorretor = [c.corretor?esc(c.corretor):'', c.codigo?('código '+esc(c.codigo)):''].filter(Boolean).join(' · ');
+  const pendentes = inc.checklist ? c.checklist.filter(i=>!i.done) : [];
   return `
     <article class="rep-card ${destaque}">
       <h3>${esc(c.title)}</h3>
@@ -1238,11 +1463,16 @@ function cardReportRow(c,si){
       ${c.dataEntrega?`<div class="rep-meta">Entrega em ${fmtISO(c.dataEntrega)}</div>`:''}
       ${situacao?`<div class="rep-status">${situacao}</div>`:''}
       ${redes.length?`<div class="rep-meta">Publicações: ${redes.join(' · ')}</div>`:''}
-      ${c.obs?`<div class="rep-obs">${esc(c.obs)}</div>`:''}
+      ${inc.link&&c.link?`<div class="rep-meta">Link: ${esc(c.link)}</div>`:''}
+      ${pendentes.length?`<div class="rep-check"><b>Falta</b><ul>${pendentes.map(i=>`<li>${esc(i.text)}</li>`).join('')}</ul></div>`:''}
+      ${inc.obs&&c.obs?`<div class="rep-obs">${esc(c.obs)}</div>`:''}
     </article>`;
 }
-function exportReport(){
-  const ativos=cards.filter(c=>!c.archived);
+function exportReport(f){
+  f=f||repFiltroPadrao();
+  const inc=f.includes;
+  const ativos=repAplicaFiltro(f);
+  if(!ativos.length){ alert('Nenhum conteúdo se encaixa nesses filtros. Ajuste e tente de novo.'); return; }
   const porEtapa=STAGES.map((st,si)=>({
     st,si,list:ativos.filter(c=>c.stage===si).sort((a,b)=>urgencyKey(a,si)-urgencyKey(b,si)),
   })).filter(g=>g.list.length>0);
@@ -1250,14 +1480,16 @@ function exportReport(){
   const entreguesOntime=ativos.filter(c=>c.deliveryStatus==='ontime').length;
   const entreguesLate=ativos.filter(c=>c.deliveryStatus==='late').length;
   const porEtapaResumo=STAGES.map((st,si)=>({label:st.label,n:ativos.filter(c=>c.stage===si).length})).filter(e=>e.n>0);
-  const metasResumo=METAS.map(m=>({...m,n:ativos.filter(c=>c.classificacoes.includes(m.classif)&&c.agendadoAt&&sameMonth(c.agendadoAt)).length}));
+  const metasResumo=METAS.map(m=>({...m,n:cards.filter(c=>!c.archived&&c.classificacoes.includes(m.classif)&&c.agendadoAt&&sameMonth(c.agendadoAt)).length}));
   const dataGeracao=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const titulo=(f.titulo||'').trim()||'Acompanhamento de gravações';
+  const recorte=repDescricao(f);
   const nomeArquivo='acompanhamento-gravacoes-'+todayISO();
 
   const secoesHtml=porEtapa.map(g=>`
     <section class="rep-sec">
-      <h2>${g.st.emoji} ${esc(g.st.label)}</h2>
-      ${g.list.map(c=>cardReportRow(c,g.si)).join('')}
+      <h2>${g.st.emoji} ${esc(g.st.label)} <span class="rep-sec-n">${g.list.length}</span></h2>
+      ${g.list.map(c=>cardReportRow(c,g.si,inc)).join('')}
     </section>`).join('');
 
   const html=`<!doctype html>
@@ -1283,6 +1515,13 @@ function exportReport(){
   .rep-chip .n{font-family:var(--serif);font-size:19px;font-weight:700}
   .rep-chip .l{font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-top:2px}
   .rep-sec h2{font-family:var(--serif);font-size:16px;border-bottom:1px solid var(--bege);padding-bottom:6px;margin:22px 0 10px}
+  .rep-sec-n{font-family:var(--sans);font-size:10px;font-weight:600;color:var(--muted);
+    background:var(--bege);border-radius:20px;padding:2px 8px;vertical-align:middle;margin-left:4px}
+  .rep-recorte{font-size:11.5px;color:var(--grafite);background:var(--branco);border:1px solid var(--bege);
+    border-left:3px solid var(--dourado);border-radius:8px;padding:9px 13px;margin-bottom:20px}
+  .rep-recorte b{font-weight:600}
+  .rep-check{font-size:11px;margin-top:4px}
+  .rep-check ul{margin:2px 0 0 16px;padding:0}
   .rep-card{background:var(--branco);border:1px solid var(--bege);border-left:3px solid var(--dourado);border-radius:8px;padding:10px 14px;margin-bottom:8px;page-break-inside:avoid}
   .rep-card.rep-late{border-left-color:var(--vermelho);background:var(--vermelho-bg)}
   .rep-card.rep-ontime{border-left-color:var(--verde);background:var(--verde-bg)}
@@ -1297,16 +1536,17 @@ function exportReport(){
   }
 </style></head>
 <body>
-  <h1>Acompanhamento de gravações</h1>
+  <h1>${esc(titulo)}</h1>
   <div class="rep-data">Cris Maciel Consultoria Imobiliária, gerado em ${dataGeracao}</div>
-  <div class="rep-resumo">
-    <div class="rep-chip"><div class="n">${ativos.length}</div><div class="l">Ativos</div></div>
+  <div class="rep-recorte">Este documento traz <b>${ativos.length} ${ativos.length===1?'conteúdo':'conteúdos'}</b>: ${esc(recorte)}.</div>
+  ${inc.resumo?`<div class="rep-resumo">
+    <div class="rep-chip"><div class="n">${ativos.length}</div><div class="l">No relatório</div></div>
     ${porEtapaResumo.map(e=>`<div class="rep-chip"><div class="n">${e.n}</div><div class="l">${esc(e.label)}</div></div>`).join('')}
     <div class="rep-chip"><div class="n">${atrasados}</div><div class="l">Atrasados</div></div>
     <div class="rep-chip"><div class="n">${entreguesOntime}</div><div class="l">No prazo</div></div>
     <div class="rep-chip"><div class="n">${entreguesLate}</div><div class="l">Com atraso</div></div>
     ${metasResumo.map(m=>`<div class="rep-chip"><div class="n">${m.n}/${m.target}</div><div class="l">${esc(m.label)}</div></div>`).join('')}
-  </div>
+  </div>`:''}
   ${secoesHtml}
 </body></html>`;
 
@@ -1316,6 +1556,70 @@ function exportReport(){
   win.document.write(html);
   win.document.close();
   win.onload=()=>{ setTimeout(()=>{ win.focus(); win.print(); }, 350); };
+}
+
+/* ---------- MODAL DO RELATÓRIO ---------- */
+function corretoresConhecidos(){
+  const s=new Set();
+  cards.forEach(c=>{ if(!c.archived && c.corretor) s.add(c.corretor); });
+  return [...s].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+function openReportModal(){
+  repFiltro=repFiltroPadrao();
+  renderReportModal();
+  document.getElementById('overlayReport').classList.add('open');
+}
+function closeReportModal(){ document.getElementById('overlayReport').classList.remove('open'); }
+/* Marcar qualquer filtro na mao desliga o modelo pronto, para o documento nao
+   sair descrito como uma coisa e filtrado como outra. */
+function repCustomizou(){ repFiltro.preset=null; renderReportModal(); }
+function renderReportModal(){
+  const f=repFiltro;
+
+  document.getElementById('rPresets').innerHTML=REPORT_PRESETS.map(p=>
+    `<button type="button" class="chip-opt preset ${f.preset===p.key?'on':''}" data-preset="${p.key}">${esc(p.label)}</button>`).join('');
+
+  document.getElementById('rStages').innerHTML=STAGES.map((s,i)=>
+    `<button type="button" class="chip-opt ${(!f.stages||f.stages.includes(i))?'on':''}" data-stage="${i}">${s.emoji} ${esc(s.label)}</button>`).join('');
+
+  document.getElementById('rClassif').innerHTML=CLASSIF.map(cl=>
+    `<button type="button" class="chip-opt ${f.classif.includes(cl)?'on':''}" data-rcl="${esc(cl)}">${esc(cl)}</button>`).join('');
+
+  document.getElementById('rIncludes').innerHTML=REPORT_INCLUDES.map(i=>
+    `<button type="button" class="chip-opt ${f.includes[i.key]?'on':''}" data-inc="${i.key}">${esc(i.label)}</button>`).join('');
+
+  fillSelect('rCorretor',[{v:'',l:'Todos'}].concat(corretoresConhecidos().map(c=>({v:c,l:c}))),f.corretor);
+  document.getElementById('rPrazo').value=f.prazo;
+  document.getElementById('rTitulo').value=f.titulo;
+
+  const n=repAplicaFiltro(f).length;
+  const box=document.getElementById('rContagem');
+  box.classList.toggle('vazio',n===0);
+  box.innerHTML = n===0
+    ? 'Nenhum conteúdo se encaixa nesses filtros.'
+    : `<b>${n}</b> ${n===1?'conteúdo entra':'conteúdos entram'} neste relatório: ${esc(repDescricao(f))}.`;
+
+  document.getElementById('rPresets').querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{
+    const p=REPORT_PRESETS.find(x=>x.key===b.dataset.preset);
+    f.preset=p.key; f.stages=p.stages?[...p.stages]:null; f.prazo=p.prazo;
+    renderReportModal();
+  }));
+  document.getElementById('rStages').querySelectorAll('[data-stage]').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.stage;
+    let sel=f.stages?[...f.stages]:STAGES.map((_,k)=>k);
+    sel = sel.includes(i) ? sel.filter(x=>x!==i) : sel.concat(i).sort((a,b2)=>a-b2);
+    f.stages = sel.length===STAGES.length ? null : sel;
+    repCustomizou();
+  }));
+  document.getElementById('rClassif').querySelectorAll('[data-rcl]').forEach(b=>b.addEventListener('click',()=>{
+    const cl=b.dataset.rcl;
+    f.classif = f.classif.includes(cl) ? f.classif.filter(x=>x!==cl) : f.classif.concat(cl);
+    repCustomizou();
+  }));
+  document.getElementById('rIncludes').querySelectorAll('[data-inc]').forEach(b=>b.addEventListener('click',()=>{
+    f.includes[b.dataset.inc]=!f.includes[b.dataset.inc];
+    renderReportModal();
+  }));
 }
 
 /* ---------- SEED ---------- */
@@ -1368,6 +1672,8 @@ document.getElementById('mDelete').addEventListener('click',deleteCard);
 document.getElementById('mArchive').addEventListener('click',archiveCard);
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeCardModal()});
 document.getElementById('fTitle').addEventListener('input',e=>e.target.style.borderColor='');
+['fGravacao','fDataEntrega','fStage'].forEach(id=>
+  document.getElementById(id).addEventListener('change',atualizaAvisoPrazo));
 
 document.getElementById('btnNewIdea').addEventListener('click',()=>openIdeaModal(null));
 document.getElementById('iClose').addEventListener('click',closeIdeaModal);
@@ -1379,14 +1685,22 @@ document.getElementById('iTitulo').addEventListener('input',e=>e.target.style.bo
 
 document.getElementById('fClass').addEventListener('change',render);
 document.getElementById('fSearch').addEventListener('input',render);
-document.getElementById('btnReport').addEventListener('click',exportReport);
+document.getElementById('btnReport').addEventListener('click',openReportModal);
+document.getElementById('rClose').addEventListener('click',closeReportModal);
+document.getElementById('rCancel').addEventListener('click',closeReportModal);
+document.getElementById('overlayReport').addEventListener('click',e=>{if(e.target.id==='overlayReport')closeReportModal()});
+document.getElementById('rCorretor').addEventListener('change',e=>{repFiltro.corretor=e.target.value;repCustomizou();});
+document.getElementById('rPrazo').addEventListener('change',e=>{repFiltro.prazo=e.target.value;repCustomizou();});
+document.getElementById('rTitulo').addEventListener('input',e=>{repFiltro.titulo=e.target.value;});
+document.getElementById('rGerar').addEventListener('click',()=>{ exportReport(repFiltro); closeReportModal(); });
 document.getElementById('btnExport').addEventListener('click',exportBackup);
 document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('fileImport').click());
 document.getElementById('fileImport').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value='';});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCardModal();closeIdeaModal();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCardModal();closeIdeaModal();closeReportModal();}});
 
 (async function(){
   initSelects();
+  initTips();
   await load();
   const changed=runAutomations();
   if(cloud) changed.forEach(syncCard); else if(changed.length) persistLocal();
