@@ -540,11 +540,19 @@ let calYear=new Date().getFullYear();
 let calSelectedDay=null;
 
 /* ---------- CHECKLISTS AUTOMÁTICOS ---------- */
+/* Itens aposentados do processo. Saem dos checklists automaticos e tambem dos
+   cards ja salvos, na reconciliacao. Comparacao por texto exato. */
+const CHECKLIST_APOSENTADOS=[
+  'Incluído na planilha do Isaac',
+  'Gravação realizada',
+  'Entregue no Sharepoint',
+  'Programado na plataforma',
+];
 function checklistFor(clArr){
-  const longo=['Roteiro enviado ao corretor','Incluído na planilha do Isaac','Gravação realizada','Entregue no Sharepoint','Corretor avisado no WhatsApp','Fotos atualizadas no Kenlo','Arte e descrição prontas','Programado na plataforma'];
-  const curto=['Roteiro rápido definido','Gravação realizada','Edição finalizada','Entregue no Sharepoint','Arte e legenda prontas','Programado na plataforma'];
-  const inst=['Ideia escolhida com horário combinado com o Isaac','Roteiro pronto','Itens de gravação providenciados','Gravação realizada','Entregue no Sharepoint','Arte e descrição prontas','Programado na plataforma'];
-  const inter=['Material do Drive ou site IHB selecionado','Melhores imagens escolhidas','Descrição feita no ChatGPT sem tópicos','Padrão do corretor incluído','Arte pronta no Canva','Programado na plataforma'];
+  const longo=['Roteiro enviado ao corretor','Corretor avisado no WhatsApp','Fotos atualizadas no Kenlo','Arte e descrição prontas'];
+  const curto=['Roteiro rápido definido','Edição finalizada','Arte e legenda prontas'];
+  const inst=['Ideia escolhida com horário combinado com o Isaac','Roteiro pronto','Itens de gravação providenciados','Arte e descrição prontas'];
+  const inter=['Material do Drive ou site IHB selecionado','Melhores imagens escolhidas','Descrição feita no ChatGPT sem tópicos','Padrão do corretor incluído','Arte pronta no Canva'];
   const map={'Vídeo longo / YouTube':longo,'Vídeo curto':curto,'Institucional':inst,'Internacional':inter};
   const base=(clArr&&clArr.length)?(map[clArr[0]]||longo):longo;
   return base.map(t=>({text:t,done:false}));
@@ -659,9 +667,11 @@ function runAutomations(){
    devolve true se algo mudou. Roda em todo ponto de entrada de dados, entao
    cards salvos com status errado se corrigem sozinhos na primeira abertura. */
 function reconcileCard(c){
-  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays].join('|');
+  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,(c.checklist||[]).length].join('|');
   if(c.dataEntrega===undefined) c.dataEntrega='';
   if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
+  // Itens aposentados saem tambem dos cards antigos.
+  if(Array.isArray(c.checklist)) c.checklist=c.checklist.filter(i=>!CHECKLIST_APOSENTADOS.includes(i.text));
   // Legado: entregueAt sem uma data editavel de origem.
   if(!c.dataEntrega && c.entregueAt){
     const d=new Date(c.entregueAt);
@@ -670,7 +680,7 @@ function reconcileCard(c){
   // Carimbo comprovadamente invalido: nao se entrega antes de gravar.
   if(!c.dataGravacao && c.gravadoAt && c.entregueAt && c.entregueAt<c.gravadoAt) c.gravadoAt=null;
   applyDataEntrega(c);
-  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays].join('|');
+  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,(c.checklist||[]).length].join('|');
 }
 function reconcileAll(list){ return list.filter(reconcileCard); }
 
