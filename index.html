@@ -553,12 +553,32 @@ const CHECKLIST_APOSENTADOS=[
   'Descrição feita no ChatGPT sem tópicos',
   'Padrão do corretor incluído',
   'Arte pronta no Canva',
+  'Arte e legenda prontas',
 ];
+/* Mesma tarefa tinha nome diferente em cada classificacao. Aqui as variacoes
+   antigas viram a escrita unica, preservando o que ja estava marcado. */
+const CHECKLIST_RENOMEADOS={
+  'Roteiro enviado ao corretor':'Roteiro pronto',
+  'Roteiro rápido definido':'Roteiro pronto',
+  'Arte e descrição prontas':'Arte pronta',
+};
+function normalizaChecklist(lista){
+  if(!Array.isArray(lista)) return lista;
+  const saida=[];
+  lista.forEach(i=>{
+    const texto=CHECKLIST_RENOMEADOS[i.text]||i.text;
+    if(CHECKLIST_APOSENTADOS.includes(texto)) return;
+    const igual=saida.find(x=>x.text===texto);
+    if(igual){ if(i.done) igual.done=true; return; }   // repetido: mantem o marcado
+    saida.push({text:texto,done:!!i.done});
+  });
+  return saida;
+}
 function checklistFor(clArr){
-  const longo=['Roteiro enviado ao corretor','Corretor avisado no WhatsApp','Fotos atualizadas no Kenlo','Arte e descrição prontas'];
-  const curto=['Roteiro rápido definido','Arte e legenda prontas'];
-  const inst=['Ideia escolhida com horário combinado com o Isaac','Roteiro pronto','Itens de gravação providenciados','Arte e descrição prontas'];
-  const inter=[];
+  const longo=['Roteiro pronto','Descrição feita','Corretor avisado no WhatsApp','Fotos atualizadas no Kenlo','Arte pronta'];
+  const curto=['Roteiro pronto','Descrição feita'];
+  const inst=['Ideia escolhida com horário combinado com o Isaac','Roteiro pronto','Descrição feita','Itens de gravação providenciados','Arte pronta'];
+  const inter=['Descrição feita'];
   const map={'Vídeo longo / YouTube':longo,'Vídeo curto':curto,'Institucional':inst,'Internacional':inter};
   const base=(clArr&&clArr.length)?(map[clArr[0]]||longo):longo;
   return base.map(t=>({text:t,done:false}));
@@ -673,11 +693,11 @@ function runAutomations(){
    devolve true se algo mudou. Roda em todo ponto de entrada de dados, entao
    cards salvos com status errado se corrigem sozinhos na primeira abertura. */
 function reconcileCard(c){
-  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,(c.checklist||[]).length].join('|');
+  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,JSON.stringify(c.checklist||[])].join('|');
   if(c.dataEntrega===undefined) c.dataEntrega='';
   if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
-  // Itens aposentados saem tambem dos cards antigos.
-  if(Array.isArray(c.checklist)) c.checklist=c.checklist.filter(i=>!CHECKLIST_APOSENTADOS.includes(i.text));
+  // Aposenta, renomeia e tira repetidos tambem nos cards ja salvos.
+  c.checklist=normalizaChecklist(c.checklist);
   // Legado: entregueAt sem uma data editavel de origem.
   if(!c.dataEntrega && c.entregueAt){
     const d=new Date(c.entregueAt);
@@ -686,7 +706,7 @@ function reconcileCard(c){
   // Carimbo comprovadamente invalido: nao se entrega antes de gravar.
   if(!c.dataGravacao && c.gravadoAt && c.entregueAt && c.entregueAt<c.gravadoAt) c.gravadoAt=null;
   applyDataEntrega(c);
-  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,(c.checklist||[]).length].join('|');
+  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,JSON.stringify(c.checklist||[])].join('|');
 }
 function reconcileAll(list){ return list.filter(reconcileCard); }
 
