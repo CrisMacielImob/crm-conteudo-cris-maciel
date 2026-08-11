@@ -547,12 +547,18 @@ const CHECKLIST_APOSENTADOS=[
   'Gravação realizada',
   'Entregue no Sharepoint',
   'Programado na plataforma',
+  'Edição finalizada',
+  'Material do Drive ou site IHB selecionado',
+  'Melhores imagens escolhidas',
+  'Descrição feita no ChatGPT sem tópicos',
+  'Padrão do corretor incluído',
+  'Arte pronta no Canva',
 ];
 function checklistFor(clArr){
   const longo=['Roteiro enviado ao corretor','Corretor avisado no WhatsApp','Fotos atualizadas no Kenlo','Arte e descrição prontas'];
-  const curto=['Roteiro rápido definido','Edição finalizada','Arte e legenda prontas'];
+  const curto=['Roteiro rápido definido','Arte e legenda prontas'];
   const inst=['Ideia escolhida com horário combinado com o Isaac','Roteiro pronto','Itens de gravação providenciados','Arte e descrição prontas'];
-  const inter=['Material do Drive ou site IHB selecionado','Melhores imagens escolhidas','Descrição feita no ChatGPT sem tópicos','Padrão do corretor incluído','Arte pronta no Canva'];
+  const inter=[];
   const map={'Vídeo longo / YouTube':longo,'Vídeo curto':curto,'Institucional':inst,'Internacional':inter};
   const base=(clArr&&clArr.length)?(map[clArr[0]]||longo):longo;
   return base.map(t=>({text:t,done:false}));
