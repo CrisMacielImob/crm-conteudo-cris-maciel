@@ -478,8 +478,9 @@
       <div class="rep-contagem" id="rContagem"></div>
     </div>
     <div class="modal-foot">
+      <button class="btn-arch" id="rImprimir" style="margin-right:auto">Abrir para imprimir</button>
       <button class="btn-ghost" id="rCancel">Cancelar</button>
-      <button class="btn-primary" id="rGerar">Gerar relatório</button>
+      <button class="btn-primary" id="rGerar">⤓ Baixar PDF</button>
     </div>
   </div>
 </div>
@@ -496,6 +497,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="config.js"></script>
 <script>
 const DAY=86400000;
@@ -575,10 +577,13 @@ function normalizaChecklist(lista){
   return saida;
 }
 function checklistFor(clArr){
-  const longo=['Roteiro pronto','Descrição feita','Corretor avisado no WhatsApp','Fotos atualizadas no Kenlo','Arte pronta'];
-  const curto=['Roteiro pronto','Descrição feita'];
-  const inst=['Ideia escolhida com horário combinado com o Isaac','Roteiro pronto','Descrição feita','Itens de gravação providenciados','Arte pronta'];
-  const inter=['Descrição feita'];
+  // Base comum a todo conteudo. Se algo vale para todos, mora aqui, para nao
+  // existir a mesma tarefa escrita de dois jeitos.
+  const comuns=['Roteiro pronto','Descrição feita','Corretor avisado no WhatsApp'];
+  const longo=[...comuns,'Fotos atualizadas no Kenlo','Arte pronta'];
+  const curto=[...comuns,'Fotos atualizadas no Kenlo'];
+  const inst=[...comuns,'Ideia escolhida com horário combinado com o Isaac','Itens de gravação providenciados','Arte pronta'];
+  const inter=[...comuns];
   const map={'Vídeo longo / YouTube':longo,'Vídeo curto':curto,'Institucional':inst,'Internacional':inter};
   const base=(clArr&&clArr.length)?(map[clArr[0]]||longo):longo;
   return base.map(t=>({text:t,done:false}));
@@ -1484,6 +1489,29 @@ function repDescricao(f){
   return partes.length?partes.join(' · '):'todos os conteúdos em andamento';
 }
 
+/* Um unico calculo alimenta tanto o PDF quanto a versao para imprimir,
+   para as duas saidas nunca contarem coisas diferentes. */
+function montaDadosRelatorio(f){
+  f=f||repFiltroPadrao();
+  const ativos=repAplicaFiltro(f);
+  if(!ativos.length){ alert('Nenhum conteúdo se encaixa nesses filtros. Ajuste e tente de novo.'); return null; }
+  return {
+    f, inc:f.includes, ativos,
+    porEtapa:STAGES.map((st,si)=>({
+      st,si,list:ativos.filter(c=>c.stage===si).sort((a,b)=>urgencyKey(a,si)-urgencyKey(b,si)),
+    })).filter(g=>g.list.length>0),
+    atrasados:ativos.filter(c=>isOverdue(c,c.stage)).length,
+    entreguesOntime:ativos.filter(c=>c.deliveryStatus==='ontime').length,
+    entreguesLate:ativos.filter(c=>c.deliveryStatus==='late').length,
+    porEtapaResumo:STAGES.map((st,si)=>({label:st.label,n:ativos.filter(c=>c.stage===si).length})).filter(e=>e.n>0),
+    metasResumo:METAS.map(m=>({...m,n:cards.filter(c=>!c.archived&&c.classificacoes.includes(m.classif)&&c.agendadoAt&&sameMonth(c.agendadoAt)).length})),
+    dataGeracao:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    titulo:(f.titulo||'').trim()||'Acompanhamento de gravações',
+    recorte:repDescricao(f),
+    nomeArquivo:'acompanhamento-gravacoes-'+todayISO(),
+  };
+}
+
 function cardReportRow(c,si,inc){
   const destaque = (isOverdue(c,si)||c.deliveryStatus==='late') ? 'rep-late' : (c.deliveryStatus==='ontime' ? 'rep-ontime' : '');
   const situacao = situacaoInfo(c,si).map(p=>p.text).join(' · ');
@@ -1505,22 +1533,10 @@ function cardReportRow(c,si,inc){
     </article>`;
 }
 function exportReport(f){
-  f=f||repFiltroPadrao();
-  const inc=f.includes;
-  const ativos=repAplicaFiltro(f);
-  if(!ativos.length){ alert('Nenhum conteúdo se encaixa nesses filtros. Ajuste e tente de novo.'); return; }
-  const porEtapa=STAGES.map((st,si)=>({
-    st,si,list:ativos.filter(c=>c.stage===si).sort((a,b)=>urgencyKey(a,si)-urgencyKey(b,si)),
-  })).filter(g=>g.list.length>0);
-  const atrasados=ativos.filter(c=>isOverdue(c,c.stage)).length;
-  const entreguesOntime=ativos.filter(c=>c.deliveryStatus==='ontime').length;
-  const entreguesLate=ativos.filter(c=>c.deliveryStatus==='late').length;
-  const porEtapaResumo=STAGES.map((st,si)=>({label:st.label,n:ativos.filter(c=>c.stage===si).length})).filter(e=>e.n>0);
-  const metasResumo=METAS.map(m=>({...m,n:cards.filter(c=>!c.archived&&c.classificacoes.includes(m.classif)&&c.agendadoAt&&sameMonth(c.agendadoAt)).length}));
-  const dataGeracao=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
-  const titulo=(f.titulo||'').trim()||'Acompanhamento de gravações';
-  const recorte=repDescricao(f);
-  const nomeArquivo='acompanhamento-gravacoes-'+todayISO();
+  const d=montaDadosRelatorio(f);
+  if(!d) return;
+  const {inc,ativos,porEtapa,atrasados,entreguesOntime,entreguesLate,
+    porEtapaResumo,metasResumo,dataGeracao,titulo,recorte,nomeArquivo}=d;
 
   const secoesHtml=porEtapa.map(g=>`
     <section class="rep-sec">
@@ -1592,6 +1608,171 @@ function exportReport(f){
   win.document.write(html);
   win.document.close();
   win.onload=()=>{ setTimeout(()=>{ win.focus(); win.print(); }, 350); };
+}
+
+/* ---------- RELATÓRIO EM PDF ----------
+   Gera o arquivo direto, sem passar pela caixa de impressao, para o Breno
+   poder anexar no WhatsApp. As fontes da marca nao existem dentro do PDF sem
+   embutir o arquivo inteiro da fonte, entao usamos serifada para titulos e
+   sem serifa para o corpo, mantendo as cores exatas da identidade. */
+const PDF_COR={
+  branco:[255,255,255], creme:[247,244,238], bege:[230,226,219],
+  dourado:[200,151,55], grafite:[71,67,66], muted:[138,133,127],
+  vermelho:[178,58,72], vermelhoBg:[247,228,230],
+  verde:[63,122,84], verdeBg:[230,242,234],
+};
+/* O PDF usa fontes padrao, que nao tem emoji. Tirar os simbolos evita que
+   virem quadradinhos. A cor e o texto ja comunicam a situacao. */
+function pdfLimpo(t){ return String(t==null?'':t).replace(/[^\x00-\xFF]/g,'').replace(/\s{2,}/g,' ').trim(); }
+
+function exportReportPDF(f){
+  const lib=window.jspdf&&window.jspdf.jsPDF;
+  if(!lib){
+    alert('Não foi possível carregar o gerador de PDF. Verifique a conexão e tente de novo, ou use a opção de abrir para imprimir.');
+    return;
+  }
+  const d=montaDadosRelatorio(f);
+  if(!d) return;
+  const {inc,ativos,porEtapa,atrasados,entreguesOntime,entreguesLate,
+    porEtapaResumo,metasResumo,dataGeracao,titulo,recorte,nomeArquivo}=d;
+
+  const doc=new lib({unit:'mm',format:'a4',orientation:'portrait'});
+  const LARG=210, ALT=297, M=15, W=LARG-2*M;
+  let y=M;
+
+  const fill=c=>doc.setFillColor.apply(doc,PDF_COR[c]);
+  const tint=c=>doc.setTextColor.apply(doc,PDF_COR[c]);
+  const draw=c=>doc.setDrawColor.apply(doc,PDF_COR[c]);
+  const alturaLinha=pt=>pt*0.3528*1.3;
+
+  function novaPagina(){ doc.addPage(); y=M; }
+  function precisa(h){ if(y+h>ALT-M-8) novaPagina(); }
+
+  /* Escreve um paragrafo quebrando linhas e devolve a altura usada. */
+  function texto(txt,x,largura,{fonte='helvetica',estilo='normal',tam=9,cor='grafite'}={}){
+    const limpo=pdfLimpo(txt);
+    if(!limpo) return 0;
+    doc.setFont(fonte,estilo); doc.setFontSize(tam); tint(cor);
+    const linhas=doc.splitTextToSize(limpo,largura);
+    linhas.forEach(l=>{ doc.text(l,x,y+alturaLinha(tam)*0.78); y+=alturaLinha(tam); });
+    return linhas.length*alturaLinha(tam);
+  }
+  function alturaTexto(txt,largura,tam,fonte,estilo){
+    const limpo=pdfLimpo(txt);
+    if(!limpo) return 0;
+    doc.setFont(fonte||'helvetica',estilo||'normal'); doc.setFontSize(tam);
+    return doc.splitTextToSize(limpo,largura).length*alturaLinha(tam);
+  }
+
+  // ---------- CABEÇALHO ----------
+  doc.setFont('times','bold'); doc.setFontSize(22); tint('dourado');
+  doc.text(pdfLimpo(titulo),M,y+7); y+=10;
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); tint('muted');
+  doc.text(pdfLimpo('Cris Maciel Consultoria Imobiliária  ·  gerado em '+dataGeracao),M,y+3); y+=8;
+
+  // ---------- RECORTE ----------
+  {
+    const txt=`Este documento traz ${ativos.length} ${ativos.length===1?'conteúdo':'conteúdos'}: ${recorte}.`;
+    const h=alturaTexto(txt,W-10,9)+6;
+    fill('creme'); draw('bege'); doc.setLineWidth(0.2);
+    doc.rect(M,y,W,h,'FD');
+    fill('dourado'); doc.rect(M,y,1.2,h,'F');
+    const yTexto=y; y=yTexto+3;
+    texto(txt,M+5,W-10,{tam:9,cor:'grafite'});
+    y=yTexto+h+6;
+  }
+
+  // ---------- RESUMO EM NÚMEROS ----------
+  if(inc.resumo){
+    const chips=[{n:ativos.length,l:'No relatório'}]
+      .concat(porEtapaResumo.map(e=>({n:e.n,l:e.label})))
+      .concat([{n:atrasados,l:'Atrasados'},{n:entreguesOntime,l:'No prazo'},{n:entreguesLate,l:'Com atraso'}])
+      .concat(metasResumo.map(m=>({n:m.n+'/'+m.target,l:m.label})));
+    const porLinha=4, larg=(W-3*3)/porLinha, altC=14;
+    chips.forEach((c,i)=>{
+      const col=i%porLinha;
+      if(col===0){ precisa(altC+3); }
+      const x=M+col*(larg+3);
+      fill('branco'); draw('bege'); doc.setLineWidth(0.2);
+      doc.roundedRect(x,y,larg,altC,1.6,1.6,'FD');
+      doc.setFont('times','bold'); doc.setFontSize(14); tint('grafite');
+      doc.text(String(c.n),x+3,y+6.5);
+      doc.setFont('helvetica','normal'); doc.setFontSize(6.6); tint('muted');
+      doc.splitTextToSize(pdfLimpo(c.l).toUpperCase(),larg-6).slice(0,2)
+        .forEach((l,k)=>doc.text(l,x+3,y+10.2+k*2.6));
+      if(col===porLinha-1 || i===chips.length-1) y+=altC+3;
+    });
+    y+=3;
+  }
+
+  // ---------- SEÇÕES POR ETAPA ----------
+  porEtapa.forEach(g=>{
+    precisa(16);
+    doc.setFont('times','bold'); doc.setFontSize(13); tint('grafite');
+    doc.text(pdfLimpo(g.st.label)+'  ('+g.list.length+')',M,y+4);
+    y+=6;
+    draw('bege'); doc.setLineWidth(0.3); doc.line(M,y,M+W,y);
+    y+=4;
+
+    g.list.forEach(c=>{
+      const atrasadoAgora=isOverdue(c,g.si);
+      const barra = (atrasadoAgora||c.deliveryStatus==='late') ? 'vermelho'
+                  : (c.deliveryStatus==='ontime' ? 'verde' : 'dourado');
+      const fundo = barra==='vermelho' ? 'vermelhoBg' : (barra==='verde' ? 'verdeBg' : 'branco');
+
+      const larguraInterna=W-10;
+      const metas=[];
+      if(c.classificacoes.length) metas.push(c.classificacoes.join(' · '));
+      const idImovel=[c.corretor,c.codigo?('código '+c.codigo):''].filter(Boolean).join(' · ');
+      if(idImovel) metas.push(idImovel);
+      if(c.dataGravacao) metas.push('Gravação em '+fmtISO(c.dataGravacao));
+      if(c.dataEntrega) metas.push('Entrega em '+fmtISO(c.dataEntrega));
+      const redes=(c.areas||[]).filter(a=>a.data).map(a=>a.rede+' '+fmtISO(a.data));
+      if(redes.length) metas.push('Publicações: '+redes.join(' · '));
+      if(inc.link&&c.link) metas.push('Link: '+c.link);
+      const situacao=situacaoInfo(c,g.si).map(p=>p.text).join(' · ');
+      const pendentes=inc.checklist?c.checklist.filter(i=>!i.done).map(i=>'• '+i.text):[];
+
+      // Mede tudo antes de desenhar, para o card nunca partir entre paginas.
+      let h=4;
+      h+=alturaTexto(c.title,larguraInterna,11,'times','bold');
+      metas.forEach(m=>h+=alturaTexto(m,larguraInterna,8));
+      if(situacao) h+=alturaTexto(situacao,larguraInterna,8.5,'helvetica','bold')+1;
+      pendentes.forEach(p=>h+=alturaTexto(p,larguraInterna-3,8));
+      if(inc.obs&&c.obs) h+=alturaTexto(c.obs,larguraInterna,8,'helvetica','italic')+1;
+      h+=4;
+
+      precisa(h+3);
+      fill(fundo); draw('bege'); doc.setLineWidth(0.2);
+      doc.roundedRect(M,y,W,h,1.6,1.6,'FD');
+      fill(barra); doc.rect(M,y+0.6,1.2,h-1.2,'F');
+
+      const topo=y; y=topo+3;
+      texto(c.title,M+5,larguraInterna,{fonte:'times',estilo:'bold',tam:11,cor:'grafite'});
+      metas.forEach(m=>texto(m,M+5,larguraInterna,{tam:8,cor:'muted'}));
+      if(situacao){
+        y+=1;
+        texto(situacao,M+5,larguraInterna,{estilo:'bold',tam:8.5,
+          cor: barra==='vermelho'?'vermelho':(barra==='verde'?'verde':'grafite')});
+      }
+      pendentes.forEach(p=>texto(p,M+8,larguraInterna-3,{tam:8,cor:'grafite'}));
+      if(inc.obs&&c.obs){ y+=1; texto(c.obs,M+5,larguraInterna,{estilo:'italic',tam:8,cor:'muted'}); }
+      y=topo+h+3;
+    });
+    y+=3;
+  });
+
+  // ---------- RODAPÉ ----------
+  const total=doc.getNumberOfPages();
+  for(let p=1;p<=total;p++){
+    doc.setPage(p);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); tint('muted');
+    doc.text('Cris Maciel Consultoria Imobiliária',M,ALT-8);
+    doc.text('Página '+p+' de '+total,LARG-M,ALT-8,{align:'right'});
+  }
+
+  doc.save(nomeArquivo+'.pdf');
+  flashSaving();
 }
 
 /* ---------- MODAL DO RELATÓRIO ---------- */
@@ -1728,7 +1909,8 @@ document.getElementById('overlayReport').addEventListener('click',e=>{if(e.targe
 document.getElementById('rCorretor').addEventListener('change',e=>{repFiltro.corretor=e.target.value;repCustomizou();});
 document.getElementById('rPrazo').addEventListener('change',e=>{repFiltro.prazo=e.target.value;repCustomizou();});
 document.getElementById('rTitulo').addEventListener('input',e=>{repFiltro.titulo=e.target.value;});
-document.getElementById('rGerar').addEventListener('click',()=>{ exportReport(repFiltro); closeReportModal(); });
+document.getElementById('rGerar').addEventListener('click',()=>{ exportReportPDF(repFiltro); closeReportModal(); });
+document.getElementById('rImprimir').addEventListener('click',()=>{ exportReport(repFiltro); closeReportModal(); });
 document.getElementById('btnExport').addEventListener('click',exportBackup);
 document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('fileImport').click());
 document.getElementById('fileImport').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value='';});
