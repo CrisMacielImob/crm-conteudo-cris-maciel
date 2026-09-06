@@ -254,6 +254,7 @@
   .loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--creme);z-index:99}
   .loading .name{font-family:var(--serif);color:var(--dourado);font-size:22px}
   #fileImport{display:none}
+  #fileMerge{display:none}
 
   /* BALÃO DE DETALHE */
   .tip{position:fixed;z-index:90;background:var(--branco);border:1px solid var(--linha);
@@ -494,6 +495,8 @@
   <button id="btnExport">Exportar backup</button>
   <button id="btnImport">Importar backup</button>
   <input type="file" id="fileImport" accept="application/json">
+  <button id="btnMerge">Importar somando</button>
+  <input type="file" id="fileMerge" accept="application/json">
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -1424,6 +1427,44 @@ function importBackup(file){
   reader.readAsText(file);
 }
 
+/* Importa somando: mantem tudo que ja existe e acrescenta apenas os registros
+   novos do arquivo. Comparacao por id. Serve para receber um lote de cards de
+   planejamento sem derrubar o quadro atual. */
+function mergeBackup(file){
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!Array.isArray(data.cards)||!Array.isArray(data.ideas)) throw new Error('formato inválido');
+      const idsCards=new Set(cards.map(c=>c.id));
+      const idsIdeas=new Set(ideas.map(i=>i.id));
+      const novosCards=data.cards.filter(c=>c&&c.id&&!idsCards.has(c.id));
+      const novasIdeas=data.ideas.filter(i=>i&&i.id&&!idsIdeas.has(i.id));
+      const repetidos=(data.cards.length-novosCards.length)+(data.ideas.length-novasIdeas.length);
+      if(!novosCards.length&&!novasIdeas.length){
+        alert('Nada novo neste arquivo. Todos os registros já estão no quadro.');
+        return;
+      }
+      let aviso='Somar ao quadro atual: '+novosCards.length+' card(s) e '+novasIdeas.length+' ideia(s).';
+      if(repetidos) aviso+=' '+repetidos+' já existiam e serão ignorados.';
+      aviso+=cloud?' Isso aparece para todo mundo. Continuar?':' Continuar?';
+      if(!confirm(aviso)) return;
+      reconcileAll(novosCards);
+      if(cloud){
+        if(novosCards.length) await sb.from('cards').insert(novosCards.map(cardToRow));
+        if(novasIdeas.length) await sb.from('ideas').insert(novasIdeas.map(ideaToRow));
+        cards=cards.concat(novosCards);ideas=ideas.concat(novasIdeas);
+        flashSaving();
+      }else{
+        cards=cards.concat(novosCards);ideas=ideas.concat(novasIdeas);
+        persistLocal();
+      }
+      render();
+    }catch(err){ console.error(err); alert('Não foi possível importar este arquivo.'); }
+  };
+  reader.readAsText(file);
+}
+
 /* ---------- RELATÓRIO DE ACOMPANHAMENTO ---------- */
 /* Modelos prontos: cada um responde a uma pergunta que o Breno faz na pratica.
    stages null significa todas as etapas. */
@@ -1914,6 +1955,8 @@ document.getElementById('rImprimir').addEventListener('click',()=>{ exportReport
 document.getElementById('btnExport').addEventListener('click',exportBackup);
 document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('fileImport').click());
 document.getElementById('fileImport').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value='';});
+document.getElementById('btnMerge').addEventListener('click',()=>document.getElementById('fileMerge').click());
+document.getElementById('fileMerge').addEventListener('change',e=>{if(e.target.files[0])mergeBackup(e.target.files[0]);e.target.value='';});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCardModal();closeIdeaModal();closeReportModal();}});
 
 (async function(){
