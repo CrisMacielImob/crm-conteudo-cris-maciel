@@ -1152,10 +1152,21 @@ function reconcileCard(c){
   if(c.resultado===undefined) c.resultado=null;
   /* Card que ja existia antes das travas nao vira furo retroativo nem enche a
      fila: a trava que ele ja passou entra como legado, dita fechada. O que
-     ainda esta antes da trava segue pendente, que e o certo daqui pra frente. */
-  if(!c.aprov||typeof c.aprov!=='object'){
-    c.aprov={};
-    GATES.forEach(g=>{ if(c.stage>=g.guarda) c.aprov[g.key]={legado:true}; });
+     ainda esta antes da trava segue pendente, que e o certo daqui pra frente.
+
+     A marca e o carimbo `desde`, e nao "aprov esta vazio", porque a coluna
+     nasce '{}' no banco: todo card antigo chegaria aqui vazio e todo furo
+     verdadeiro tambem, e os dois ficariam indistinguiveis. Com o carimbo, a
+     conversao acontece uma vez so por card; da persiste em diante, cruzar
+     uma trava sem aval e furo de verdade. */
+  if(!c.aprov||typeof c.aprov!=='object') c.aprov={};
+  if(!c.aprov.desde){
+    c.aprov.desde=Date.now();
+    GATES.forEach(g=>{
+      // Nunca por cima de um aval que ja existe.
+      const jaTem=g.ordem.some(p=>aprovDe(c,g.key)[p]);
+      if(c.stage>=g.guarda && !jaTem) c.aprov[g.key]={legado:true};
+    });
   }
   // Aposenta, renomeia e tira repetidos tambem nos cards ja salvos.
   c.checklist=normalizaChecklist(c.checklist);
@@ -1918,7 +1929,7 @@ function renderIdeas(){
       dataGravacao:'',dataEntrega:'',areas:[],pubHora:'',link:'',obs:idea.descricao||'',
       checklist:checklistFor(classificacoes),stage:S_PROD,archived:false,createdAt:Date.now(),
       agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null,
-      autoArchiveOptOut:false};
+      autoArchiveOptOut:false,aprov:{desde:Date.now()},ajustes:[],resultado:null};
     cards.push(c);
     ideas=ideas.filter(x=>x.id!==idea.id);
     syncNewCard(c);syncDeleteIdea(idea.id);
@@ -2303,7 +2314,7 @@ function saveCardModal(acao){
   }else{
     const c={id:crypto.randomUUID(),...data,stage:0,archived:false,createdAt:Date.now(),
       agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null,
-      autoArchiveOptOut:false,aprov:{},ajustes:[],resultado:data.resultado||null};
+      autoArchiveOptOut:false,aprov:{desde:Date.now()},ajustes:[],resultado:data.resultado||null};
     /* Card que nasce ja adiantado e registro do que aconteceu, nao atalho:
        nunca existiu o momento de aprovar aquilo. Entao a trava que ele pula
        nasce como legado, e nao como furo. Furo e ter tido a chance e deixar
