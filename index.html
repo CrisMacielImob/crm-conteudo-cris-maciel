@@ -268,6 +268,126 @@
   .tip .tip-mais{font-size:10.5px;color:var(--muted);font-style:italic;margin-top:4px}
   [data-tip]{cursor:help}
 
+  /* ---------- IDENTIDADE ---------- */
+  .eu{display:flex;align-items:center;gap:8px;background:var(--creme);border:1px solid var(--linha);
+    border-radius:20px;padding:4px 12px 4px 5px;margin-left:6px;flex-shrink:0;cursor:pointer;transition:border-color .12s}
+  .eu:hover{border-color:var(--dourado)}
+  .eu .av{width:23px;height:23px;border-radius:50%;background:var(--dourado);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+  .eu .av.p-nicole{background:var(--c-inst)}
+  .eu .av.p-none{background:var(--bege);color:var(--muted)}
+  .eu .txt{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+  .eu .txt b{font-size:12px;font-weight:600;color:var(--grafite)}
+  .eu .txt span{font-size:8.5px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .seg .badge.fila{background:var(--dourado);color:#fff}
+  .seg .badge.fila.zero{background:var(--bege);color:var(--muted)}
+
+  /* ---------- FAIXA DO BANCO ---------- */
+  .schemabar{background:var(--ambar-bg);color:var(--ambar);font-size:12px;font-weight:600;
+    padding:9px 22px;display:none;gap:8px;align-items:center;flex-shrink:0;line-height:1.45}
+  .schemabar.on{display:flex}
+
+  /* ---------- SELO DE APROVAÇÃO NO CARD ---------- */
+  .selo{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;
+    border-radius:8px;padding:5px 8px;margin-top:8px;line-height:1.3}
+  .selo.voce{background:var(--ambar-bg);color:var(--ambar)}
+  .selo.outro{background:var(--creme);color:var(--muted)}
+  .selo.ok{background:var(--verde-bg);color:var(--verde)}
+  .selo.furo,.selo.ajuste{background:var(--vermelho-bg);color:var(--vermelho)}
+  .selo .q{margin-left:auto;font-weight:700;opacity:.8;white-space:nowrap;padding-left:6px}
+  .selo.res-abaixo{background:var(--vermelho-bg);color:var(--vermelho)}
+  .selo.res-dentro{background:var(--creme);color:var(--muted)}
+  .selo.res-acima{background:var(--verde-bg);color:var(--verde)}
+
+  /* ---------- VIEW DE APROVAÇÕES ---------- */
+  .aprov-view{flex:1;overflow-y:auto;padding:22px}
+  .aprov-view h2{font-family:var(--serif);font-size:22px;margin-bottom:4px}
+  .aprov-view .hint{font-size:12.5px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+  .aprov-sec{margin-bottom:28px}
+  .aprov-sec h3{font-family:var(--serif);font-size:16.5px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+  .aprov-sec h3 .n{background:var(--bege);font-size:11px;font-weight:600;border-radius:20px;
+    padding:2px 9px;font-family:var(--sans)}
+  .aprov-sec h3.urg .n{background:var(--dourado);color:#fff}
+  .aprov-sec .sub{font-size:12px;color:var(--muted);margin-bottom:13px;line-height:1.5}
+  .aprov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(336px,1fr));gap:14px}
+  .aprov-card{background:var(--branco);border:1px solid var(--linha);border-radius:12px;padding:15px;
+    border-left:3px solid var(--dourado);display:flex;flex-direction:column}
+  .aprov-card.urgente{border-left-color:var(--vermelho);background:#FFFBFB}
+  .aprov-card.espera{border-left-color:var(--bege)}
+  .aprov-card .gate{font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+    font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .aprov-card .gate .quando{font-weight:700}
+  .aprov-card .gate .quando.red{color:var(--vermelho)}
+  .aprov-card .gate .quando.soon{color:var(--ambar)}
+  .aprov-card h4{font-family:var(--serif);font-size:15.5px;line-height:1.25;margin-bottom:5px}
+  .aprov-card .m{font-size:11.5px;color:var(--muted);margin-bottom:10px;line-height:1.45}
+  .criterios{background:var(--creme);border-radius:9px;padding:9px 12px;margin-bottom:11px}
+  .criterios .t{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);
+    font-weight:700;margin-bottom:5px}
+  .criterios ul{margin:0;padding-left:15px}
+  .criterios li{font-size:11.5px;line-height:1.55;color:var(--grafite)}
+  .aprov-card .falta{background:var(--ambar-bg);color:var(--ambar);font-size:11.5px;font-weight:600;
+    border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.45}
+  .aprov-card .pedido{background:var(--vermelho-bg);color:var(--vermelho);font-size:11.5px;
+    border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.45}
+  .aprov-card .pedido b{display:block;font-size:8.5px;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:3px}
+  .aprov-card .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:2px}
+  .aprov-card .row button{font-size:12px;font-weight:600;padding:9px 13px;border-radius:8px}
+  .btn-ok{background:var(--verde);color:#fff}
+  .btn-ok:hover{filter:brightness(1.08)}
+  .btn-ajuste{background:var(--creme);color:var(--vermelho)}
+  .btn-ajuste:hover{background:var(--vermelho-bg)}
+  .btn-abrir{background:var(--creme);color:var(--grafite);margin-left:auto}
+  .btn-abrir:hover{background:var(--bege)}
+  .aprov-empty{background:var(--verde-bg);color:var(--verde);border-radius:11px;padding:16px 18px;
+    font-size:13px;font-weight:600;line-height:1.5}
+  .aprov-nada{font-size:12.5px;color:var(--muted);font-style:italic;padding:4px 2px}
+
+  /* ---------- BLOCO DE APROVAÇÃO NO MODAL ---------- */
+  .mbox{border:1px solid var(--linha);border-radius:11px;padding:13px 14px;margin-bottom:16px;background:var(--creme)}
+  .mbox.alerta{border-color:var(--ambar);background:var(--ambar-bg)}
+  .mbox.okk{border-color:var(--verde);background:var(--verde-bg)}
+  .mbox.erro{border-color:var(--vermelho);background:var(--vermelho-bg)}
+  .mbox .cab{font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;
+    color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .mbox .cab .quando{margin-left:auto;letter-spacing:.4px;text-transform:none;font-size:10.5px}
+  .mbox .linha{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:4px 0;line-height:1.4}
+  .mbox .linha .ic{width:16px;flex-shrink:0;text-align:center}
+  .mbox .linha .qq{margin-left:auto;font-size:10.5px;color:var(--muted);white-space:nowrap;padding-left:8px}
+  .mbox .acoes{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .mbox .acoes button{font-size:12px;font-weight:600;padding:9px 14px;border-radius:8px}
+  .mbox .nota{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.5}
+  .mbox .pedido{background:var(--branco);border-radius:8px;padding:8px 10px;margin-top:9px;
+    font-size:11.5px;line-height:1.45;color:var(--vermelho)}
+  .mbox .pedido b{display:block;font-size:8.5px;letter-spacing:1.1px;text-transform:uppercase;margin-bottom:3px}
+
+  /* ---------- RESULTADO ---------- */
+  .res-opts{display:flex;gap:7px;flex-wrap:wrap}
+  .res-opt{border:1px solid var(--linha);background:var(--creme);border-radius:20px;
+    padding:8px 14px;font-size:12px;font-weight:600;color:var(--muted)}
+  .res-opt:hover{border-color:var(--dourado)}
+  .res-opt.on.abaixo{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+  .res-opt.on.dentro{background:var(--grafite);border-color:var(--grafite);color:#fff}
+  .res-opt.on.acima{background:var(--verde);border-color:var(--verde);color:#fff}
+
+  /* ---------- MODAL DE IDENTIDADE ---------- */
+  .quem-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .quem-opt{border:1px solid var(--linha);background:var(--creme);border-radius:12px;padding:19px 14px;
+    display:flex;flex-direction:column;align-items:center;gap:10px}
+  .quem-opt:hover{border-color:var(--dourado);background:#FBF6EA}
+  .quem-opt.on{border-color:var(--dourado);background:#FBF6EA}
+  .quem-opt .av{width:46px;height:46px;border-radius:50%;background:var(--dourado);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;font-family:var(--serif)}
+  .quem-opt .av.p-nicole{background:var(--c-inst)}
+  .quem-opt b{font-size:14.5px;font-family:var(--serif);font-weight:600}
+
+  /* ---------- AVISO FLUTUANTE ---------- */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(10px);
+    background:var(--grafite);color:#fff;font-size:12.5px;font-weight:600;padding:12px 19px;
+    border-radius:10px;box-shadow:0 10px 30px rgba(71,67,66,.3);z-index:95;opacity:0;
+    transition:opacity .18s,transform .18s;pointer-events:none;max-width:min(470px,90vw);line-height:1.45}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
   @media (max-width:680px){
     .toolbar{width:100%;margin-left:0}
   }
@@ -285,10 +405,13 @@
 
   <div class="seg" id="viewSeg">
     <button data-view="board" class="active">Quadro</button>
+    <button data-view="aprov">Aprovações <span class="badge fila zero" id="aprovCount">0</span></button>
     <button data-view="ideas">Ideias <span class="badge" id="ideaCount">0</span></button>
     <button data-view="cal">Calendário</button>
     <button data-view="arch">Arquivados <span class="badge" id="archCount">0</span></button>
   </div>
+
+  <button class="eu" id="btnEu" title="Trocar de pessoa"></button>
 
   <div class="toolbar" id="toolbarBoard">
     <div class="filtro">
@@ -308,11 +431,13 @@
 </header>
 
 <div class="alertbar" id="alertbar"></div>
+<div class="schemabar" id="schemabar"></div>
 
 <div class="board" id="board"></div>
 <div class="ideas-view" id="ideasView" style="display:none"></div>
 <div class="cal-view" id="calView" style="display:none"></div>
 <div class="arch-view" id="archView" style="display:none"></div>
+<div class="aprov-view" id="aprovView" style="display:none"></div>
 
 <!-- MODAL CARD -->
 <div class="overlay" id="overlay">
@@ -322,6 +447,7 @@
       <button class="x" id="mClose">&times;</button>
     </div>
     <div class="modal-body">
+      <div id="mAprovBox"></div>
       <div class="field">
         <label>Título do conteúdo</label>
         <input id="fTitle" placeholder="Ex: Tour Condomínio Maria José, com João Silva">
@@ -366,6 +492,14 @@
         <div class="areas-editor" id="areasEditor"></div>
         <div class="hint-inline">Assim que uma dessas datas chegar, o card vai sozinho para <b>Postado</b>.</div>
       </div>
+      <div class="field" id="kitBox">
+        <label>Kit de publicação</label>
+        <div class="hint-inline" style="margin-top:-3px;margin-bottom:9px">O pacote que a Nicole monta depois da entrega. Enquanto faltar alguma coisa aqui, o card não chega na fila de liberação.</div>
+        <input id="fPubTitulo" placeholder="Título da publicação" style="margin-bottom:9px">
+        <textarea id="fPubDescricao" placeholder="Descrição ou legenda que vai no post" style="margin-bottom:9px"></textarea>
+        <input id="fPubCapa" placeholder="Capa: link do Canva, do Drive ou onde ela está">
+        <div class="hint-inline" id="kitStatus" style="margin-top:7px"></div>
+      </div>
       <div class="field">
         <label>Link do vídeo ou Sharepoint</label>
         <input id="fLink" placeholder="Cole o link aqui">
@@ -377,6 +511,12 @@
       <div class="field">
         <label>Observações</label>
         <textarea id="fObs" placeholder="Anotações do conteúdo"></textarea>
+      </div>
+      <div class="field" id="resBox" style="display:none">
+        <label>Como foi depois de publicado</label>
+        <div class="res-opts" id="resOpts"></div>
+        <textarea id="fResTexto" placeholder="Uma linha: o que explica esse resultado e o que repetir ou evitar da próxima vez" style="margin-top:9px"></textarea>
+        <div class="hint-inline">Não muda nada no quadro. É o que transforma uma sequência de posts num aprendizado, e entra no relatório.</div>
       </div>
     </div>
     <div class="modal-foot">
@@ -486,6 +626,44 @@
   </div>
 </div>
 
+<!-- MODAL QUEM ESTÁ USANDO -->
+<div class="overlay" id="overlayQuem">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h2>Quem está usando?</h2>
+      <button class="x" id="qClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <div class="quem-opts" id="quemOpts"></div>
+      </div>
+      <div class="hint-inline">Fica salvo neste navegador e serve para o quadro saber de quem é cada aprovação. Não é senha: cada um aprova só em nome próprio, e é isso que faz o registro valer alguma coisa.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PEDIR AJUSTE -->
+<div class="overlay" id="overlayAjuste">
+  <div class="modal" style="max-width:470px">
+    <div class="modal-head">
+      <h2 id="ajTitulo">Pedir ajuste</h2>
+      <button class="x" id="ajClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label id="ajLabel">O que precisa mudar</label>
+        <textarea id="ajTexto" placeholder="Seja específico. Esse texto é o que a outra pessoa vai ler para saber o que refazer." style="min-height:90px"></textarea>
+      </div>
+      <div class="hint-inline" id="ajNota"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" id="ajCancel">Cancelar</button>
+      <button class="btn-primary" id="ajSalvar">Enviar pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 <div class="tip" id="tip"></div>
 
 <div class="foot-note">
@@ -538,6 +716,7 @@ let ideas=[];
 let editingCardId=null;
 let editingIdeaId=null;
 let draftChecklist=[];
+let draftResNota='';
 let draftClassif=[];
 let draftAreas=[];
 let view='board';
@@ -559,6 +738,11 @@ const CHECKLIST_APOSENTADOS=[
   'Padrão do corretor incluído',
   'Arte pronta no Canva',
   'Arte e legenda prontas',
+  /* Descricao e capa deixaram de ser caixinha de marcar: viraram campo com
+     conteudo dentro, no Kit de publicacao, conferido na liberacao. Duas
+     fontes de verdade para a mesma coisa e pior do que nenhuma. */
+  'Descrição feita',
+  'Arte pronta',
 ];
 /* Mesma tarefa tinha nome diferente em cada classificacao. Aqui as variacoes
    antigas viram a escrita unica, preservando o que ja estava marcado. */
@@ -582,10 +766,10 @@ function normalizaChecklist(lista){
 function checklistFor(clArr){
   // Base comum a todo conteudo. Se algo vale para todos, mora aqui, para nao
   // existir a mesma tarefa escrita de dois jeitos.
-  const comuns=['Roteiro pronto','Descrição feita','Corretor avisado no WhatsApp'];
-  const longo=[...comuns,'Fotos atualizadas no Kenlo','Arte pronta'];
+  const comuns=['Roteiro pronto','Corretor avisado no WhatsApp'];
+  const longo=[...comuns,'Fotos atualizadas no Kenlo'];
   const curto=[...comuns,'Fotos atualizadas no Kenlo'];
-  const inst=[...comuns,'Ideia escolhida com horário combinado com o Isaac','Itens de gravação providenciados','Arte pronta'];
+  const inst=[...comuns,'Ideia escolhida com horário combinado com o Isaac','Itens de gravação providenciados'];
   const inter=[...comuns];
   const map={'Vídeo longo / YouTube':longo,'Vídeo curto':curto,'Institucional':inst,'Internacional':inter};
   const base=(clArr&&clArr.length)?(map[clArr[0]]||longo):longo;
@@ -593,6 +777,262 @@ function checklistFor(clArr){
 }
 function isPristineChecklist(list){
   return CLASSIF.some(cl=>JSON.stringify(list)===JSON.stringify(checklistFor([cl])));
+}
+
+/* ---------- PESSOAS E IDENTIDADE ----------
+   Identificacao leve, sem senha. Serve para o quadro saber de quem e cada
+   aprovacao e para cada um enxergar a propria fila. Nao e autenticacao: o
+   que sustenta o registro e a regra combinada de so aprovar em nome proprio.
+   Fica salvo no navegador, entao cada pessoa escolhe uma vez. */
+const PESSOAS=[{key:'breno',nome:'Breno'},{key:'nicole',nome:'Nicole'}];
+const QUEMKEY='crm-conteudo-quem';
+let quem=null;
+function nomeDe(k){const p=PESSOAS.find(x=>x.key===k);return p?p.nome:'—';}
+function iniDe(k){const n=nomeDe(k);return n==='—'?'?':n[0].toUpperCase();}
+function listaPt(arr){
+  if(!arr||!arr.length) return '';
+  if(arr.length===1) return arr[0];
+  return arr.slice(0,-1).join(', ')+' e '+arr[arr.length-1];
+}
+function carregaQuem(){
+  try{ const v=localStorage.getItem(QUEMKEY); if(PESSOAS.some(p=>p.key===v)) quem=v; }catch(e){}
+}
+function defineQuem(k){
+  quem=k;
+  try{ localStorage.setItem(QUEMKEY,k); }catch(e){}
+  fecharQuem(); render();
+}
+
+/* ---------- AS DUAS TRAVAS ----------
+   pauta  guarda a entrada em Gravado.  Breno e Nicole aprovam o que vai ser
+          gravado, em qualquer ordem, antes da camera ligar. Depois de gravado
+          nao adianta mais discordar do gancho.
+   pub    guarda a entrada em Postado.  Nicole monta o kit (titulo, descricao,
+          capa e data) e manda; o Breno confere e libera. Nessa ordem.
+
+   Uma trava impede o avanco MANUAL. O que ela nao faz e mentir: se a data
+   chegar e a automacao mover o card, o registro vira um furo, visivel no
+   card, no alerta e no relatorio. O quadro nunca finge que a gravacao nao
+   aconteceu so porque ninguem clicou em aprovar. */
+const GATES=[
+  {key:'pauta', guarda:S_GRAV, label:'Pauta aprovada', curto:'pauta',
+   ordem:['breno','nicole'], sequencial:false,
+   titulo:'Aprovação de pauta',
+   pergunta:'O que vai ser gravado está de pé?',
+   verbo:'grava',
+   criterios:['Gancho e promessa claros nos 3 primeiros segundos',
+              'Imóvel ou tema certo para este momento do mês',
+              'Roteiro pronto e alinhado com o corretor',
+              'Formato e duração combinados'],
+   furo:'Gravado sem aprovação de pauta',
+   acao:'Aprovar pauta'},
+  {key:'pub', guarda:S_POST, label:'Liberado para postar', curto:'publicação',
+   ordem:['nicole','breno'], sequencial:true,
+   titulo:'Liberação para postar',
+   pergunta:'O pacote de publicação está do jeito que tem que ir para o ar?',
+   verbo:'publica',
+   criterios:['Título à altura do que o vídeo entrega',
+              'Descrição escrita, revisada e com chamada',
+              'Capa que faz parar o dedo',
+              'Data e rede certas para o conteúdo'],
+   furo:'Postado sem liberação',
+   acao:'Liberar para postar',
+   acaoPor:{nicole:'Mandar para o Breno conferir',breno:'Liberar para postar'}},
+];
+const gateDe=k=>GATES.find(g=>g.key===k);
+/* Montar o pacote e liberar o pacote sao atos diferentes, entao o botao de
+   cada um diz o que aquela pessoa esta de fato fazendo. */
+function rotuloAcao(g,pessoa){ return (g.acaoPor&&g.acaoPor[pessoa])||g.acao; }
+
+/* ---------- KIT DE PUBLICAÇÃO ----------
+   O que a Nicole precisa ter pronto antes de mandar para o Breno. Titulo so
+   e exigido quando tem YouTube envolvido, que e onde o titulo trabalha. */
+function exigeTitulo(c){
+  return (c.classificacoes||[]).includes('Vídeo longo / YouTube')
+      || (c.areas||[]).some(a=>a.rede==='YouTube');
+}
+function kitPendencias(c){
+  const faltam=[];
+  if(exigeTitulo(c) && !(c.pubTitulo||'').trim()) faltam.push('o título');
+  if(!(c.pubDescricao||'').trim()) faltam.push('a descrição');
+  if(!(c.pubCapa||'').trim()) faltam.push('a capa');
+  if(!(c.areas||[]).some(a=>a.data)) faltam.push('a data de publicação');
+  return faltam;
+}
+/* Assinatura do kit. Se qualquer parte disso muda, a liberação que existia
+   era sobre outro pacote, entao ela cai. */
+function kitAssinatura(c){
+  return [(c.pubTitulo||'').trim(),(c.pubDescricao||'').trim(),(c.pubCapa||'').trim(),
+    (c.areas||[]).filter(a=>a.data).map(a=>a.rede+'|'+a.data).sort().join(',')].join('\u00a7');
+}
+
+/* ---------- ESTADO DE CADA TRAVA ---------- */
+function aprovDe(c,gk){
+  if(!c.aprov||typeof c.aprov!=='object') c.aprov={};
+  if(!c.aprov[gk]||typeof c.aprov[gk]!=='object') c.aprov[gk]={};
+  return c.aprov[gk];
+}
+function gateCompleto(c,gk){
+  const a=aprovDe(c,gk);
+  if(a.legado) return true;
+  return gateDe(gk).ordem.every(p=>a[p]&&a[p].at);
+}
+function gateFaltam(c,gk){
+  const a=aprovDe(c,gk);
+  if(a.legado) return [];
+  return gateDe(gk).ordem.filter(p=>!(a[p]&&a[p].at));
+}
+/* Na trava sequencial existe uma vez certa. Na paralela, os dois podem. */
+function vezDe(c,gk){
+  const g=gateDe(gk), faltam=gateFaltam(c,gk);
+  if(!faltam.length) return null;
+  return g.sequencial ? g.ordem.find(p=>faltam.includes(p)) : null;
+}
+function ehMinhaVez(c,gk,pessoa){
+  if(!pessoa) return false;
+  const faltam=gateFaltam(c,gk);
+  if(!faltam.includes(pessoa)) return false;
+  const g=gateDe(gk);
+  return g.sequencial ? vezDe(c,gk)===pessoa : true;
+}
+function quemEsperamos(c,gk){
+  const g=gateDe(gk);
+  return g.sequencial ? [vezDe(c,gk)].filter(Boolean) : gateFaltam(c,gk);
+}
+/* Pode clicar em aprovar agora? Se nao, o motivo e a proxima acao util. */
+function podeAprovar(c,gk,pessoa){
+  if(!pessoa) return {ok:false,motivo:'Diga quem é você no topo da tela para poder aprovar.'};
+  if(!aprovacoesPersistem()) return {ok:false,motivo:'O banco ainda não guarda aprovações. Rode a atualização do supabase/schema.sql antes.'};
+  const g=gateDe(gk);
+  if(gateCompleto(c,gk)) return {ok:false,motivo:'Esta etapa já está aprovada.'};
+  if(!gateFaltam(c,gk).includes(pessoa)) return {ok:false,motivo:'Você já aprovou. Falta '+listaPt(quemEsperamos(c,gk).map(nomeDe))+'.'};
+  if(g.sequencial && vezDe(c,gk)!==pessoa) return {ok:false,motivo:'Falta '+nomeDe(vezDe(c,gk))+' antes de você.'};
+  if(gk==='pub' && pessoa===g.ordem[0]){
+    const f=kitPendencias(c);
+    if(f.length) return {ok:false,motivo:'Falta '+listaPt(f)+' no kit de publicação.',kit:f};
+  }
+  return {ok:true};
+}
+function aprova(c,gk,pessoa){
+  const r=podeAprovar(c,gk,pessoa);
+  if(!r.ok){ toast(r.motivo); return false; }
+  aprovDe(c,gk)[pessoa]={at:Date.now()};
+  /* Trava refeita encerra o pedido que a tinha derrubado. Sem isso, um pedido
+     ja atendido voltaria a aparecer na proxima vez que a trava abrisse, por
+     outro motivo qualquer, acusando a pessoa de algo que ela ja corrigiu. */
+  if(gateCompleto(c,gk)){
+    (c.ajustes||[]).forEach(a=>{ if(a.gate===gk && !a.resolvidoEm) a.resolvidoEm=Date.now(); });
+  }
+  return true;
+}
+/* Pedir ajuste zera a trava inteira: o pacote que estava de pe deixou de
+   estar, entao quem tinha mandado precisa mandar de novo. */
+function pedeAjuste(c,gk,pessoa,texto){
+  const a=aprovDe(c,gk);
+  gateDe(gk).ordem.forEach(p=>{ delete a[p]; });
+  delete a.legado;
+  c.ajustes=(c.ajustes||[]).concat([{gate:gk,por:pessoa,at:Date.now(),texto:(texto||'').trim()}]);
+}
+/* Historico guarda tudo; em aberto e so o que ninguem atendeu ainda. */
+function ultimoAjuste(c,gk){
+  const l=(c.ajustes||[]).filter(a=>a.gate===gk && !a.resolvidoEm);
+  return l.length?l[l.length-1]:null;
+}
+/* Ajuste em aberto: existe pedido e a trava ainda nao foi refeita. */
+function ajustePendente(c,gk){
+  return gateCompleto(c,gk)?null:ultimoAjuste(c,gk);
+}
+function zeraGatePub(c){
+  const a=aprovDe(c,'pub');
+  const tinha=gateDe('pub').ordem.some(p=>a[p]&&a[p].at);
+  if(!tinha) return false;
+  gateDe('pub').ordem.forEach(p=>{ delete a[p]; });
+  return true;
+}
+
+/* ---------- TRAVA NO AVANÇO MANUAL ---------- */
+function travaPara(c,ns){
+  for(const g of GATES){
+    if(ns>=g.guarda && c.stage<g.guarda && !gateCompleto(c,g.key)) return g;
+  }
+  return null;
+}
+/* Furo: o card ja passou de uma trava que nunca foi fechada. Derivado, nunca
+   gravado, entao aprovar depois limpa o furo sozinho. */
+function furos(c){
+  return GATES.filter(g=>c.stage>=g.guarda && !gateCompleto(c,g.key));
+}
+/* Caminho unico de qualquer mudanca manual de etapa. Travado, nao empurra:
+   abre o card na aprovacao que falta, que e o que destrava de verdade. */
+function tentaMover(c,ns){
+  const g=travaPara(c,ns);
+  if(g){
+    toast(STAGES[ns].label+' está travado: falta '+g.titulo.toLowerCase()+'.');
+    openCardModal(c);
+    return false;
+  }
+  enterStage(c,ns);
+  return true;
+}
+
+/* ---------- PRAZO DE CADA TRAVA ----------
+   A aprovacao de pauta corre contra a data da gravacao; a liberacao corre
+   contra a data de publicacao. E dai que sai a ordem da fila: o que vai ao ar
+   antes aparece primeiro. */
+function prazoGate(c,g){
+  if(g.key==='pauta') return c.dataGravacao||null;
+  const datas=(c.areas||[]).filter(a=>a.data).map(a=>a.data).sort();
+  return datas.length?datas[0]:null;
+}
+function quandoGate(c,g){
+  const iso=prazoGate(c,g);
+  if(!iso) return {txt:'sem data',cls:'neutral',d:9999};
+  const d=diasEntre(iso);
+  let txt;
+  if(d>1) txt=g.verbo+' em '+d+'d';
+  else if(d===1) txt=g.verbo+' amanhã';
+  else if(d===0) txt=g.verbo+' hoje';
+  else txt='data passou há '+(-d)+'d';
+  return {txt,cls:d<=0?'red':(d===1?'soon':'neutral'),d};
+}
+
+/* ---------- FILA ----------
+   Um item por trava aberta de cada card que ainda nao passou dela. */
+function itensFila(){
+  const out=[];
+  cards.forEach(c=>{
+    if(c.archived) return;
+    GATES.forEach(g=>{
+      if(c.stage>=g.guarda) return;
+      if(gateCompleto(c,g.key)) return;
+      const meu=ehMinhaVez(c,g.key,quem);
+      out.push({c,g,meu,pode:meu?podeAprovar(c,g.key,quem):{ok:false,motivo:''},
+        quando:quandoGate(c,g)});
+    });
+  });
+  out.sort((a,b)=>a.quando.d-b.quando.d || a.c.createdAt-b.c.createdAt);
+  return out;
+}
+function contaMinhaFila(){ return itensFila().filter(i=>i.meu).length; }
+
+/* ---------- RESULTADO PÓS-PUBLICAÇÃO ----------
+   A trava melhora o que sai. Isso aqui e o que faz o proximo mes sair melhor
+   que este: uma nota e uma linha de aprendizado, tres dias depois do ar. */
+const RESULTADOS=[
+  {key:'abaixo',label:'Abaixo do esperado'},
+  {key:'dentro',label:'Dentro do esperado'},
+  {key:'acima',label:'Acima do esperado'},
+];
+const RESULTADO_DIAS=3;
+function rotuloResultado(k){const r=RESULTADOS.find(x=>x.key===k);return r?r.label:'';}
+/* Arquivado entra: arquivar e arrumacao do quadro, nao fim do aprendizado.
+   A janela de 60 dias evita que a estreia do recurso vire uma lista infinita
+   de conteudo antigo. */
+function pendentesResultado(){
+  const agora=Date.now();
+  return cards.filter(c=>c.stage===S_POST && !c.resultado && c.postadoAt
+      && agora>c.postadoAt+RESULTADO_DIAS*DAY && agora<c.postadoAt+60*DAY)
+    .sort((a,b)=>a.postadoAt-b.postadoAt);
 }
 
 /* ---------- HELPERS ---------- */
@@ -701,9 +1141,22 @@ function runAutomations(){
    devolve true se algo mudou. Roda em todo ponto de entrada de dados, entao
    cards salvos com status errado se corrigem sozinhos na primeira abertura. */
 function reconcileCard(c){
-  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,JSON.stringify(c.checklist||[])].join('|');
+  const antes=[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,
+    JSON.stringify(c.checklist||[]),JSON.stringify(c.aprov||null)].join('|');
   if(c.dataEntrega===undefined) c.dataEntrega='';
   if(c.autoArchiveOptOut===undefined) c.autoArchiveOptOut=false;
+  if(c.pubTitulo===undefined) c.pubTitulo='';
+  if(c.pubDescricao===undefined) c.pubDescricao='';
+  if(c.pubCapa===undefined) c.pubCapa='';
+  if(!Array.isArray(c.ajustes)) c.ajustes=[];
+  if(c.resultado===undefined) c.resultado=null;
+  /* Card que ja existia antes das travas nao vira furo retroativo nem enche a
+     fila: a trava que ele ja passou entra como legado, dita fechada. O que
+     ainda esta antes da trava segue pendente, que e o certo daqui pra frente. */
+  if(!c.aprov||typeof c.aprov!=='object'){
+    c.aprov={};
+    GATES.forEach(g=>{ if(c.stage>=g.guarda) c.aprov[g.key]={legado:true}; });
+  }
   // Aposenta, renomeia e tira repetidos tambem nos cards ja salvos.
   c.checklist=normalizaChecklist(c.checklist);
   // Legado: entregueAt sem uma data editavel de origem.
@@ -714,7 +1167,8 @@ function reconcileCard(c){
   // Carimbo comprovadamente invalido: nao se entrega antes de gravar.
   if(!c.dataGravacao && c.gravadoAt && c.entregueAt && c.entregueAt<c.gravadoAt) c.gravadoAt=null;
   applyDataEntrega(c);
-  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,JSON.stringify(c.checklist||[])].join('|');
+  return antes!==[c.gravadoAt,c.entregueAt,c.deliveryStatus,c.deliveryDays,
+    JSON.stringify(c.checklist||[]),JSON.stringify(c.aprov||null)].join('|');
 }
 function reconcileAll(list){ return list.filter(reconcileCard); }
 
@@ -729,8 +1183,9 @@ function initCloud(){
     }catch(e){ console.error('não foi possível iniciar o Supabase',e); cloud=false; }
   }
 }
+let temColunasAprov=true;
 function cardToRow(c){
-  return {
+  const r={
     id:c.id, title:c.title, classificacoes:c.classificacoes, corretor:c.corretor, codigo:c.codigo,
     data_gravacao:c.dataGravacao||null, areas:c.areas, pub_hora:c.pubHora, link:c.link, obs:c.obs,
     checklist:c.checklist, stage:c.stage, archived:c.archived,
@@ -743,6 +1198,18 @@ function cardToRow(c){
     delivery_status:c.deliveryStatus, delivery_days:c.deliveryDays,
     auto_archive_opt_out:!!c.autoArchiveOptOut,
   };
+  /* Enquanto o banco nao tiver as colunas novas, elas saem da escrita, senao
+     todo salvamento falharia e o quadro pararia de funcionar por causa de um
+     recurso novo. A faixa no topo avisa que falta rodar a atualizacao. */
+  if(temColunasAprov){
+    r.aprov=c.aprov||{};
+    r.ajustes=c.ajustes||[];
+    r.pub_titulo=c.pubTitulo||'';
+    r.pub_descricao=c.pubDescricao||'';
+    r.pub_capa=c.pubCapa||'';
+    r.resultado=c.resultado||null;
+  }
+  return r;
 }
 function rowToCard(r){
   return {
@@ -757,6 +1224,9 @@ function rowToCard(r){
     postadoAt:r.postado_at?new Date(r.postado_at).getTime():null,
     deliveryStatus:r.delivery_status||null, deliveryDays:r.delivery_days!=null?r.delivery_days:null,
     autoArchiveOptOut:!!r.auto_archive_opt_out,
+    aprov:r.aprov||null, ajustes:r.ajustes||[],
+    pubTitulo:r.pub_titulo||'', pubDescricao:r.pub_descricao||'', pubCapa:r.pub_capa||'',
+    resultado:r.resultado||null,
   };
 }
 function ideaToRow(i){
@@ -807,10 +1277,27 @@ function subscribeRealtime(){
     .subscribe();
 }
 
+/* ---------- SONDA DO BANCO ----------
+   Pergunta uma vez se as colunas das travas existem. Se nao existirem, o app
+   continua inteiro no que ja fazia e avisa em cima o que falta rodar, em vez
+   de quebrar todo salvamento ou fingir que aprovou. */
+async function sondaColunas(){
+  if(!cloud){ temColunasAprov=true; return; }
+  try{
+    const {error}=await sb.from('cards').select('aprov,ajustes,pub_titulo,pub_descricao,pub_capa,resultado').limit(1);
+    temColunasAprov=!error;
+    if(error) console.warn('banco sem as colunas de aprovação:',error.message);
+  }catch(e){ temColunasAprov=false; }
+}
+/* Aprovacao que nao persiste e pior do que aprovacao nenhuma: parece feita e
+   some no proximo carregamento. Entao no modo nuvem sem as colunas, trava. */
+function aprovacoesPersistem(){ return !cloud || temColunasAprov; }
+
 /* ---------- STORAGE ---------- */
 async function load(){
   initCloud();
   if(cloud){
+    await sondaColunas();
     try{
       const [cardsRes,ideasRes]=await Promise.all([
         sb.from('cards').select('*').order('created_at',{ascending:true}),
@@ -930,6 +1417,262 @@ function initTips(){
   window.addEventListener('scroll',()=>tip.classList.remove('on'),true);
 }
 
+/* ---------- AVISO FLUTUANTE ---------- */
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById('toast');
+  if(!t) return;
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('on'),4200);
+}
+function fmtQuando(ts){
+  const d=new Date(ts);
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' às '+
+    d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ---------- CHIP DE IDENTIDADE ---------- */
+function renderEu(){
+  const b=document.getElementById('btnEu');
+  if(quem){
+    b.innerHTML=`<span class="av p-${quem}">${esc(iniDe(quem))}</span>`+
+      `<span class="txt"><b>${esc(nomeDe(quem))}</b><span>trocar</span></span>`;
+  }else{
+    b.innerHTML=`<span class="av p-none">?</span>`+
+      `<span class="txt"><b>Quem é você?</b><span>identifique-se</span></span>`;
+  }
+}
+function abrirQuem(){
+  const box=document.getElementById('quemOpts');
+  box.innerHTML=PESSOAS.map(p=>
+    `<button type="button" class="quem-opt ${quem===p.key?'on':''}" data-quem="${p.key}">
+      <span class="av p-${p.key}">${esc(p.nome[0])}</span><b>${esc(p.nome)}</b>
+    </button>`).join('');
+  box.querySelectorAll('[data-quem]').forEach(b=>
+    b.addEventListener('click',()=>defineQuem(b.dataset.quem)));
+  document.getElementById('overlayQuem').classList.add('open');
+}
+function fecharQuem(){ document.getElementById('overlayQuem').classList.remove('open'); }
+
+/* ---------- MODAL DE PEDIDO DE AJUSTE ---------- */
+let ajusteCtx=null;
+function abrirAjuste(cardId,gk){
+  const c=cards.find(x=>x.id===cardId); if(!c) return;
+  const g=gateDe(gk);
+  ajusteCtx={cardId,gk};
+  document.getElementById('ajTitulo').textContent='Pedir ajuste · '+g.titulo.toLowerCase();
+  document.getElementById('ajLabel').textContent='O que precisa mudar em "'+c.title+'"';
+  document.getElementById('ajTexto').value='';
+  document.getElementById('ajNota').innerHTML=
+    'Isso zera a '+esc(g.titulo.toLowerCase())+' deste card e devolve para '+
+    esc(listaPt(g.ordem.filter(p=>p!==quem).map(nomeDe)))+'. O pedido fica visível no card até a trava ser refeita.';
+  document.getElementById('overlayAjuste').classList.add('open');
+  document.getElementById('ajTexto').focus();
+}
+function fecharAjuste(){ document.getElementById('overlayAjuste').classList.remove('open'); ajusteCtx=null; }
+function salvaAjuste(){
+  if(!ajusteCtx) return;
+  const t=document.getElementById('ajTexto');
+  if(!t.value.trim()){ t.focus(); t.style.borderColor='var(--vermelho)'; return; }
+  const c=cards.find(x=>x.id===ajusteCtx.cardId);
+  if(c){
+    pedeAjuste(c,ajusteCtx.gk,quem,t.value);
+    syncCard(c);
+    toast('Ajuste pedido. O card voltou para quem precisa refazer.');
+  }
+  fecharAjuste(); render();
+}
+
+/* ---------- SELO DE APROVAÇÃO NO CARD DO QUADRO ----------
+   Uma linha, sempre a mesma pergunta respondida: em quem está a bola. */
+function seloCard(c){
+  const fs=furos(c);
+  if(fs.length) return `<div class="selo furo">⚠ ${esc(fs[0].furo)}</div>`;
+  const g=GATES.find(g=>c.stage<g.guarda && !gateCompleto(c,g.key));
+  if(!g){
+    const prox=GATES.find(g=>c.stage<g.guarda);
+    return prox?`<div class="selo ok">✓ ${esc(prox.label)}</div>`:'';
+  }
+  const q=quandoGate(c,g);
+  const qh=q.txt?`<span class="q">${esc(q.txt)}</span>`:'';
+  const ped=ajustePendente(c,g.key);
+  if(ped) return `<div class="selo ajuste">↩ ${esc(nomeDe(ped.por))} pediu ajuste${qh}</div>`;
+  if(ehMinhaVez(c,g.key,quem)) return `<div class="selo voce">✋ Espera você · ${esc(g.curto)}${qh}</div>`;
+  const espera=quemEsperamos(c,g.key).map(nomeDe);
+  return `<div class="selo outro">⏳ Com ${esc(listaPt(espera))} · ${esc(g.curto)}${qh}</div>`;
+}
+function seloResultado(c){
+  if(!c.resultado||!c.resultado.nota) return '';
+  const rot=rotuloResultado(c.resultado.nota);
+  return `<div class="selo res-${esc(c.resultado.nota)}">📊 ${esc(rot)}</div>`;
+}
+
+/* ---------- VIEW DE APROVAÇÕES ----------
+   A fila existe porque trava que depende de alguem lembrar de olhar e a
+   mesma coisa que nao ter trava. Aqui entra ordenado por quem vai ao ar
+   primeiro, nao por quem chegou primeiro. */
+function furosRecentes(dias){
+  const lim=Date.now()-dias*DAY;
+  const out=[];
+  cards.forEach(c=>{
+    furos(c).forEach(g=>{
+      const marco = g.key==='pauta' ? (c.gravadoAt||c.createdAt) : (c.postadoAt||c.createdAt);
+      if(marco>=lim) out.push({c,g,marco});
+    });
+  });
+  return out.sort((a,b)=>b.marco-a.marco);
+}
+function cardFilaHtml(i,modo){
+  const {c,g,quando}=i;
+  const urg = quando.cls==='red'||quando.cls==='soon';
+  const cls = modo==='meu' ? (urg?'aprov-card urgente':'aprov-card') : 'aprov-card espera';
+  const linhaImovel=[c.corretor?esc(c.corretor):'',c.codigo?'código '+esc(c.codigo):'',
+    (c.classificacoes||[]).map(esc).join(' · ')].filter(Boolean).join(' · ');
+  const ped=ajustePendente(c,g.key);
+  let corpo='';
+  if(modo==='meu'){
+    corpo+=`<div class="criterios"><div class="t">${esc(g.pergunta)}</div>`+
+      `<ul>${g.criterios.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`;
+  }
+  if(ped){
+    corpo+=`<div class="pedido"><b>Ajuste pedido por ${esc(nomeDe(ped.por))} · ${esc(fmtQuando(ped.at))}</b>${esc(ped.texto)}</div>`;
+  }
+  let acoes='';
+  if(modo==='meu'){
+    if(i.pode.ok){
+      acoes=`<button class="btn-ok" data-ap="${c.id}|${g.key}">✓ ${esc(rotuloAcao(g,quem))}</button>`+
+        `<button class="btn-ajuste" data-aj="${c.id}|${g.key}">Pedir ajuste</button>`+
+        `<button class="btn-abrir" data-ab="${c.id}">Abrir</button>`;
+    }else{
+      corpo+=`<div class="falta">${esc(i.pode.motivo)}</div>`;
+      acoes=`<button class="btn-abrir" style="margin-left:0" data-ab="${c.id}">Abrir e completar</button>`;
+    }
+  }else{
+    const espera=quemEsperamos(c,g.key).map(nomeDe);
+    corpo+=`<div class="m" style="margin-bottom:10px">Aguardando ${esc(listaPt(espera))}.</div>`;
+    acoes=`<button class="btn-abrir" style="margin-left:0" data-ab="${c.id}">Abrir</button>`;
+  }
+  return `<div class="${cls}">
+    <div class="gate">${esc(g.titulo)} <span class="quando ${esc(quando.cls)}">· ${esc(quando.txt)}</span></div>
+    <h4>${esc(c.title)}</h4>
+    ${linhaImovel?`<div class="m">${linhaImovel}</div>`:''}
+    ${corpo}
+    <div class="row">${acoes}</div>
+  </div>`;
+}
+function renderAprovView(){
+  const box=document.getElementById('aprovView');
+  const itens=itensFila();
+  const meus=itens.filter(i=>i.meu);
+  const outros=itens.filter(i=>!i.meu);
+  const furosAgora=furosRecentes(30).filter(f=>!f.c.archived);
+  const furos30=furosRecentes(30);
+  const resPend=pendentesResultado();
+  const outro=PESSOAS.find(p=>p.key!==quem);
+
+  let html=`<h2>Aprovações</h2>
+    <div class="hint">Nada entra em <b>Gravado</b> sem a pauta aprovada pelos dois, e nada entra em <b>Postado</b> sem a Nicole montar o kit e o Breno liberar. Esta fila é ordenada por quem vai ao ar primeiro.</div>`;
+
+  if(!quem){
+    html+=`<div class="aprov-sec"><div class="mbox alerta">
+      <div class="cab">Falta dizer quem é você</div>
+      <div class="linha">Sem isso o quadro não sabe de quem é cada aprovação e não dá para aprovar nada.</div>
+      <div class="acoes"><button class="btn-primary" id="aprovIdent">Me identificar</button></div>
+    </div></div>`;
+  }
+
+  if(quem){
+    html+=`<div class="aprov-sec">
+      <h3 class="${meus.length?'urg':''}">Na sua mão <span class="n">${meus.length}</span></h3>
+      <div class="sub">O que não anda enquanto você não olhar.</div>`;
+    html+= meus.length
+      ? `<div class="aprov-grid">${meus.map(i=>cardFilaHtml(i,'meu')).join('')}</div>`
+      : `<div class="aprov-empty">✓ Nada esperando você. A fila está limpa.</div>`;
+    html+=`</div>`;
+  }
+
+  html+=`<div class="aprov-sec">
+    <h3>Esperando ${esc(quem?nomeDe(outro.key):'os dois')} <span class="n">${outros.length}</span></h3>
+    <div class="sub">Está andando, só não depende de você agora.</div>`;
+  html+= outros.length
+    ? `<div class="aprov-grid">${outros.map(i=>cardFilaHtml(i,'outro')).join('')}</div>`
+    : `<div class="aprov-nada">Nada pendente do outro lado.</div>`;
+  html+=`</div>`;
+
+  if(furosAgora.length || furos30.length){
+    html+=`<div class="aprov-sec">
+      <h3>Passou sem aprovação <span class="n">${furosAgora.length}</span></h3>
+      <div class="sub">A data chegou e o card andou sozinho antes de alguém liberar.
+        ${furos30.length} ${furos30.length===1?'vez':'vezes'} nos últimos 30 dias, contando o que já foi arquivado.
+        Aprovar agora ainda fecha o registro.</div>`;
+    html+= furosAgora.length
+      ? `<div class="aprov-grid">`+furosAgora.map(f=>{
+          const faltam=gateFaltam(f.c,f.g.key).map(nomeDe);
+          return `<div class="aprov-card urgente">
+            <div class="gate">${esc(f.g.titulo)}</div>
+            <h4>${esc(f.c.title)}</h4>
+            <div class="m">${esc(f.g.furo)}. Faltou ${esc(listaPt(faltam))}.</div>
+            <div class="row">
+              ${quem&&faltam.length&&gateFaltam(f.c,f.g.key).includes(quem)
+                ? `<button class="btn-ok" data-ap="${f.c.id}|${f.g.key}">✓ Registrar meu aval agora</button>`:''}
+              <button class="btn-abrir" data-ab="${f.c.id}">Abrir</button>
+            </div>
+          </div>`;
+        }).join('')+`</div>`
+      : `<div class="aprov-nada">Nenhum furo em aberto no quadro agora.</div>`;
+    html+=`</div>`;
+  }
+
+  if(resPend.length){
+    html+=`<div class="aprov-sec">
+      <h3>Fechar o ciclo <span class="n">${resPend.length}</span></h3>
+      <div class="sub">Publicado há mais de ${RESULTADO_DIAS} dias e ainda sem leitura de resultado.
+        É isso que faz o mês que vem sair diferente deste.</div>
+      <div class="aprov-grid">`+resPend.map(c=>{
+        const redes=(c.areas||[]).filter(a=>a.data).map(a=>esc(a.rede)+' '+fmtISO(a.data)).join(' · ');
+        return `<div class="aprov-card espera">
+          <div class="gate">Postado em ${esc(fmtTs(c.postadoAt))}${c.archived?' · arquivado':''}</div>
+          <h4>${esc(c.title)}</h4>
+          ${redes?`<div class="m">${redes}</div>`:''}
+          <div class="res-opts" style="margin-bottom:10px">`+
+            RESULTADOS.map(r=>`<button type="button" class="res-opt ${r.key}" data-res="${c.id}|${r.key}">${esc(r.label)}</button>`).join('')+
+          `</div>
+          <div class="row"><button class="btn-abrir" style="margin-left:0" data-ab="${c.id}">Abrir para anotar o porquê</button></div>
+        </div>`;
+      }).join('')+`</div></div>`;
+  }
+
+  box.innerHTML=html;
+
+  const bi=document.getElementById('aprovIdent');
+  if(bi) bi.addEventListener('click',abrirQuem);
+  box.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{
+    const [id,gk]=b.dataset.ap.split('|');
+    const c=cards.find(x=>x.id===id); if(!c) return;
+    if(aprova(c,gk,quem)){
+      syncCard(c);
+      toast(gateCompleto(c,gk)
+        ? gateDe(gk).label+': tudo aprovado, o card está liberado.'
+        : 'Seu aval está registrado. Falta '+listaPt(quemEsperamos(c,gk).map(nomeDe))+'.');
+      render();
+    }
+  }));
+  box.querySelectorAll('[data-aj]').forEach(b=>b.addEventListener('click',()=>{
+    const [id,gk]=b.dataset.aj.split('|');
+    abrirAjuste(id,gk);
+  }));
+  box.querySelectorAll('[data-ab]').forEach(b=>b.addEventListener('click',()=>{
+    const c=cards.find(x=>x.id===b.dataset.ab); if(c) openCardModal(c);
+  }));
+  box.querySelectorAll('[data-res]').forEach(b=>b.addEventListener('click',()=>{
+    const [id,nota]=b.dataset.res.split('|');
+    const c=cards.find(x=>x.id===id); if(!c) return;
+    c.resultado={nota,texto:(c.resultado&&c.resultado.texto)||'',at:Date.now(),por:quem||null};
+    syncCard(c); render();
+    toast('Resultado anotado. Abra o card para registrar o porquê, que é o que ensina.');
+  }));
+}
+
 /* ---------- RENDER ROOT ---------- */
 function currentFilterClass(){return document.getElementById('fClass').value}
 function currentSearch(){return document.getElementById('fSearch').value.trim().toLowerCase()}
@@ -939,26 +1682,70 @@ function render(){
   document.getElementById('ideasView').style.display = view==='ideas'?'block':'none';
   document.getElementById('calView').style.display = view==='cal'?'block':'none';
   document.getElementById('archView').style.display = view==='arch'?'block':'none';
+  document.getElementById('aprovView').style.display = view==='aprov'?'block':'none';
   document.getElementById('toolbarBoard').style.display = view==='board'?'flex':'none';
   document.getElementById('toolbarIdeas').style.display = view==='ideas'?'flex':'none';
   document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
   document.getElementById('archCount').textContent=cards.filter(c=>c.archived).length;
   document.getElementById('ideaCount').textContent=ideas.length;
-  if(view==='board'){ renderBoard(); renderMetas(); renderAlertbar(); }
+  const nFila=contaMinhaFila();
+  const bFila=document.getElementById('aprovCount');
+  bFila.textContent=nFila; bFila.classList.toggle('zero',nFila===0);
+  renderEu();
+  renderSchemabar();
+  renderAlertbar();
+  if(view==='board'){ renderBoard(); renderMetas(); }
+  else if(view==='aprov') renderAprovView();
   else if(view==='ideas') renderIdeas();
   else if(view==='cal') renderCalendar();
   else renderArchive();
 }
 
+/* Faixa de avisos: entrega atrasada, fila parada na sua mao e trava furada.
+   Tres perguntas diferentes, por isso tres pedacos, e nao um numero so. */
 function renderAlertbar(){
   const bar=document.getElementById('alertbar');
+  const partes=[];
+
   const atrasados=cards.filter(c=>!c.archived && isOverdue(c,c.stage));
-  const n=atrasados.length;
-  if(n>0){
-    bar.classList.add('on');
+  if(atrasados.length){
     const tip=tipRegister('Atrasados na entrega',atrasados.map(c=>c.title));
-    bar.innerHTML=`<span${tip}>⚠ ${n} conteúdo${n>1?'s':''} atrasado${n>1?'s':''} na entrega</span>`;
+    partes.push(`<span${tip}>⚠ ${atrasados.length} atrasado${atrasados.length>1?'s':''} na entrega</span>`);
+  }
+
+  const meus=itensFila().filter(i=>i.meu);
+  if(meus.length){
+    const urgentes=meus.filter(i=>i.quando.d<=1).length;
+    const tip=tipRegister('Esperando você',meus.map(i=>i.c.title+' · '+i.g.curto));
+    partes.push(`<span class="ir-fila" style="text-decoration:underline;cursor:pointer"${tip}>`+
+      `✋ ${meus.length} esperando você`+
+      (urgentes?`, ${urgentes} para até amanhã`:'')+`</span>`);
+  }
+
+  const abertos=[];
+  cards.forEach(c=>{ if(!c.archived) furos(c).forEach(g=>abertos.push(c.title+' · '+g.furo)); });
+  if(abertos.length){
+    const tip=tipRegister('Passou sem aprovação',abertos);
+    partes.push(`<span class="ir-fila" style="text-decoration:underline;cursor:pointer"${tip}>`+
+      `⚡ ${abertos.length} passou sem aprovação</span>`);
+  }
+
+  if(partes.length){
+    bar.classList.add('on');
+    bar.innerHTML=partes.join('<span style="opacity:.4">·</span>');
+    bar.querySelectorAll('.ir-fila').forEach(el=>el.addEventListener('click',()=>{view='aprov';render();}));
   }else bar.classList.remove('on');
+}
+/* Sem as colunas no banco a aprovacao nao teria onde morar. Em vez de fingir
+   que salvou, o app diz em cima o que falta e mantem o resto funcionando. */
+function renderSchemabar(){
+  const b=document.getElementById('schemabar');
+  if(cloud && !temColunasAprov){
+    b.classList.add('on');
+    b.innerHTML='⚠ O banco ainda não tem as colunas das aprovações, então elas não salvam. '+
+      'Abra o Supabase, vá em SQL Editor e rode o arquivo <b>supabase/schema.sql</b> de novo. '+
+      'O resto do quadro segue funcionando normal.';
+  }else b.classList.remove('on');
 }
 
 function renderBoard(){
@@ -982,7 +1769,7 @@ function renderBoard(){
     body.addEventListener('drop',e=>{
       e.preventDefault();body.classList.remove('drop');
       const id=e.dataTransfer.getData('id');const c=cards.find(x=>x.id===id);
-      if(c&&c.stage!==si){enterStage(c,si);syncCard(c);render();}
+      if(c&&c.stage!==si){ if(tentaMover(c,si)) syncCard(c); render(); }
     });
     if(list.length===0){
       body.innerHTML=`<div class="col-empty">${si===S_PROD?'Anote aqui as ideias em produção.':'Nada por aqui.'}</div>`;
@@ -1066,13 +1853,16 @@ function cardEl(c,si){
     ${metaLines}
     ${redesHtml}
     <div class="foot">${foot}</div>
+    ${seloCard(c)}
+    ${seloResultado(c)}
     ${total?`<div class="chkbar"><div class="track"><div class="fill" style="width:${pct}%"></div></div><span class="frac">${done}/${total}</span></div>`:''}
   `;
   el.addEventListener('dragstart',e=>{e.dataTransfer.setData('id',c.id);el.classList.add('dragging')});
   el.addEventListener('dragend',()=>el.classList.remove('dragging'));
   el.addEventListener('click',e=>{
     const mv=e.target.closest('[data-mv]');
-    if(mv){e.stopPropagation();const ns=c.stage+ +mv.dataset.mv;if(ns>=0&&ns<STAGES.length){enterStage(c,ns);syncCard(c);render();}return;}
+    if(mv){e.stopPropagation();const ns=c.stage+ +mv.dataset.mv;
+      if(ns>=0&&ns<STAGES.length){ if(tentaMover(c,ns)) syncCard(c); render(); } return;}
     const ar=e.target.closest('[data-arch]');
     if(ar){e.stopPropagation();c.archived=true;syncCard(c);render();return;}
     openCardModal(c);
@@ -1238,6 +2028,7 @@ function renderClassifChips(){
     else draftClassif.push(cl);
     renderClassifChips();
     if(pristine){ draftChecklist=checklistFor(draftClassif); renderChecklistEditor(); }
+    atualizaKitStatus();
   }));
 }
 function renderAreasEditor(){
@@ -1247,16 +2038,159 @@ function renderAreasEditor(){
     const row=document.createElement('div');row.className='area-row';
     row.innerHTML=`<select>${REDES.map(r=>`<option ${r===a.rede?'selected':''}>${r}</option>`).join('')}</select>
       <input type="date" value="${a.data||''}"><button class="del" type="button">&times;</button>`;
-    row.querySelector('select').addEventListener('change',e=>a.rede=e.target.value);
-    row.querySelector('input').addEventListener('change',e=>a.data=e.target.value);
-    row.querySelector('.del').addEventListener('click',()=>{draftAreas.splice(i,1);renderAreasEditor();});
+    row.querySelector('select').addEventListener('change',e=>{a.rede=e.target.value;atualizaKitStatus();});
+    row.querySelector('input').addEventListener('change',e=>{a.data=e.target.value;atualizaKitStatus();});
+    row.querySelector('.del').addEventListener('click',()=>{draftAreas.splice(i,1);renderAreasEditor();atualizaKitStatus();});
     box.appendChild(row);
   });
   const add=document.createElement('button');
   add.type='button';add.className='area-add';add.textContent='+ Adicionar rede';
-  add.addEventListener('click',()=>{draftAreas.push({rede:'Instagram',data:''});renderAreasEditor();});
+  add.addEventListener('click',()=>{draftAreas.push({rede:'Instagram',data:''});renderAreasEditor();atualizaKitStatus();});
   box.appendChild(add);
 }
+/* ---------- KIT DE PUBLICAÇÃO NO MODAL ----------
+   Valida o que esta na tela, nao o que esta salvo, para a Nicole ver a
+   pendencia sumir enquanto digita. */
+function kitDoDraft(){
+  return {
+    classificacoes:[...draftClassif],
+    areas:draftAreas.filter(a=>a.data),
+    pubTitulo:(document.getElementById('fPubTitulo')||{}).value||'',
+    pubDescricao:(document.getElementById('fPubDescricao')||{}).value||'',
+    pubCapa:(document.getElementById('fPubCapa')||{}).value||'',
+  };
+}
+function atualizaKitStatus(){
+  const el=document.getElementById('kitStatus');
+  if(!el) return;
+  const d=kitDoDraft();
+  const campoTitulo=document.getElementById('fPubTitulo');
+  const precisaTitulo=exigeTitulo(d);
+  campoTitulo.style.display=precisaTitulo?'block':'none';
+  campoTitulo.placeholder='Título da publicação (YouTube)';
+  const f=kitPendencias(d);
+  el.innerHTML = f.length
+    ? `<b style="color:var(--ambar)">Falta ${esc(listaPt(f))}.</b> Enquanto isso, este card não chega na fila de liberação.`
+    : `<b style="color:var(--verde)">Kit completo.</b> Pode mandar para a liberação.`;
+  /* O bloco das travas la em cima le o kit. Completar o kit tem que destravar
+     o botao na hora, sem obrigar a salvar, fechar e abrir de novo. */
+  if(editingCardId){
+    const c=cards.find(x=>x.id===editingCardId);
+    if(c) renderAprovBox(c);
+  }
+}
+/* O card como ele vai ficar depois de salvar. Serve so para o bloco das travas
+   enxergar o que esta na tela. O aprovar de verdade salva antes de conferir,
+   entao a previa nunca promete o que o clique nao cumpre. */
+function cardComDraft(card){
+  const d=kitDoDraft();
+  return {...card, classificacoes:[...draftClassif],
+    areas:draftAreas.filter(a=>a.data).map(a=>({...a})),
+    pubTitulo:d.pubTitulo, pubDescricao:d.pubDescricao, pubCapa:d.pubCapa};
+}
+
+/* ---------- BLOCO DAS TRAVAS NO MODAL ---------- */
+function gateBoxHtml(c,g){
+  const passou=c.stage>=g.guarda;
+  const completo=gateCompleto(c,g.key);
+  const a=aprovDe(c,g.key);
+  const minha=ehMinhaVez(c,g.key,quem);
+  let cls='mbox';
+  if(passou&&!completo) cls+=' erro';
+  else if(completo) cls+=' okk';
+  else if(minha) cls+=' alerta';
+
+  const q=quandoGate(c,g);
+  const cab=`<div class="cab">${esc(g.titulo)}`+
+    (!passou&&q.txt?`<span class="quando">${esc(q.txt)}</span>`:'')+`</div>`;
+
+  if(a.legado){
+    return `<div class="mbox"><div class="cab">${esc(g.titulo)}</div>
+      <div class="linha"><span class="ic">–</span><span>Card anterior às travas de aprovação. Dado por fechado, não entra na fila nem conta como furo.</span></div></div>`;
+  }
+
+  const esperando=quemEsperamos(c,g.key);
+  const linhas=g.ordem.map(p=>{
+    const reg=a[p];
+    if(reg&&reg.at){
+      return `<div class="linha"><span class="ic">✓</span><span><b>${esc(nomeDe(p))}</b> aprovou</span>`+
+        `<span class="qq">${esc(fmtQuando(reg.at))}</span></div>`;
+    }
+    const agora=esperando.includes(p);
+    return `<div class="linha"><span class="ic">${agora?'⏳':'·'}</span>`+
+      `<span>${agora?'Esperando <b>'+esc(nomeDe(p))+'</b>':esc(nomeDe(p))+', depois'}</span></div>`;
+  }).join('');
+
+  let extra='';
+  const ped=ajustePendente(c,g.key);
+  if(ped){
+    extra+=`<div class="pedido"><b>Ajuste pedido por ${esc(nomeDe(ped.por))} · ${esc(fmtQuando(ped.at))}</b>${esc(ped.texto)}</div>`;
+  }
+  if(passou&&!completo){
+    extra+=`<div class="nota"><b>${esc(g.furo)}.</b> A data chegou e o card andou sozinho. Registrar o aval agora fecha o registro.</div>`;
+  }
+
+  let acoes='';
+  if(minha){
+    const r=podeAprovar(c,g.key,quem);
+    if(r.ok){
+      acoes=`<button class="btn-ok" data-map="${g.key}">✓ ${esc(rotuloAcao(g,quem))}</button>`+
+        (passou?'':`<button class="btn-ajuste" data-maj="${g.key}">Pedir ajuste</button>`);
+    }else{
+      extra+=`<div class="nota"><b style="color:var(--ambar)">${esc(r.motivo)}</b></div>`;
+    }
+  }else if(!passou&&completo&&g.ordem.includes(quem)){
+    acoes=`<button class="btn-ajuste" data-maj="${g.key}">Mudei de ideia, pedir ajuste</button>`;
+  }else if(!passou&&!completo&&quem&&g.ordem.includes(quem)&&!esperando.includes(quem)){
+    const jaAprovei=a[quem]&&a[quem].at;
+    extra+=`<div class="nota">`+(jaAprovei
+      ? `Sua parte está feita. Falta ${esc(listaPt(esperando.map(nomeDe)))}.`
+      : `Ainda não é sua vez: ${esc(listaPt(esperando.map(nomeDe)))} vem antes de você.`)+`</div>`;
+  }
+
+  return `<div class="${cls}">${cab}${linhas}${extra}`+
+    (acoes?`<div class="acoes">${acoes}</div>`:'')+`</div>`;
+}
+function renderAprovBox(card){
+  const box=document.getElementById('mAprovBox');
+  if(!card){
+    box.innerHTML=`<div class="mbox"><div class="cab">Aprovações</div>
+      <div class="linha"><span class="ic">·</span><span>As travas passam a valer assim que este card for salvo.</span></div></div>`;
+    return;
+  }
+  const vista=cardComDraft(card);
+  if(!quem){
+    box.innerHTML=`<div class="mbox alerta"><div class="cab">Aprovações</div>
+      <div class="linha"><span class="ic">?</span><span>Diga quem é você no topo da tela para poder aprovar.</span></div></div>`
+      + GATES.map(g=>gateBoxHtml(vista,g)).join('');
+  }else{
+    box.innerHTML=GATES.map(g=>gateBoxHtml(vista,g)).join('');
+  }
+  box.querySelectorAll('[data-map]').forEach(b=>b.addEventListener('click',()=>
+    saveCardModal({tipo:'aprovar',gate:b.dataset.map})));
+  box.querySelectorAll('[data-maj]').forEach(b=>b.addEventListener('click',()=>
+    saveCardModal({tipo:'ajuste',gate:b.dataset.maj})));
+}
+
+/* ---------- LEITURA DE RESULTADO NO MODAL ---------- */
+function renderResultadoBox(card){
+  const box=document.getElementById('resBox');
+  if(!card || card.stage!==S_POST){ box.style.display='none'; draftResNota=''; return; }
+  box.style.display='block';
+  draftResNota=(card.resultado&&card.resultado.nota)||'';
+  document.getElementById('fResTexto').value=(card.resultado&&card.resultado.texto)||'';
+  pintaResOpts();
+}
+function pintaResOpts(){
+  const box=document.getElementById('resOpts');
+  box.innerHTML=RESULTADOS.map(r=>
+    `<button type="button" class="res-opt ${r.key} ${draftResNota===r.key?'on':''}" data-rn="${r.key}">${esc(r.label)}</button>`).join('');
+  box.querySelectorAll('[data-rn]').forEach(b=>b.addEventListener('click',()=>{
+    draftResNota = draftResNota===b.dataset.rn ? '' : b.dataset.rn;
+    pintaResOpts();
+  }));
+}
+
 function openCardModal(card){
   editingCardId=card?card.id:null;
   document.getElementById('mTitle').textContent=card?'Editar conteúdo':'Novo conteúdo';
@@ -1277,6 +2211,12 @@ function openCardModal(card){
   renderAreasEditor();
   draftChecklist=card?card.checklist.map(i=>({...i})):checklistFor([]);
   renderChecklistEditor();
+  document.getElementById('fPubTitulo').value=card?(card.pubTitulo||''):'';
+  document.getElementById('fPubDescricao').value=card?(card.pubDescricao||''):'';
+  document.getElementById('fPubCapa').value=card?(card.pubCapa||''):'';
+  atualizaKitStatus();
+  renderAprovBox(card);
+  renderResultadoBox(card);
   atualizaAvisoPrazo();
   document.getElementById('overlay').classList.add('open');
   document.getElementById('fTitle').focus();
@@ -1311,7 +2251,9 @@ function renderChecklistEditor(){
   box.appendChild(add);
 }
 
-function saveCardModal(){
+/* acao opcional: {tipo:'aprovar'|'ajuste', gate}. Aprovar pelo modal salva
+   antes, senao a conferencia seria feita sobre o card velho. */
+function saveCardModal(acao){
   const title=document.getElementById('fTitle').value.trim();
   if(!title){const t=document.getElementById('fTitle');t.focus();t.style.borderColor='var(--vermelho)';return;}
   const newStage=+document.getElementById('fStage').value;
@@ -1327,26 +2269,70 @@ function saveCardModal(){
     obs:document.getElementById('fObs').value.trim(),
     areas:draftAreas.filter(a=>a.data).map(a=>({...a})),
     checklist:draftChecklist.map(i=>({...i})),
+    pubTitulo:document.getElementById('fPubTitulo').value.trim(),
+    pubDescricao:document.getElementById('fPubDescricao').value.trim(),
+    pubCapa:document.getElementById('fPubCapa').value.trim(),
   };
+  if(document.getElementById('resBox').style.display!=='none'){
+    const texto=document.getElementById('fResTexto').value.trim();
+    data.resultado=(draftResNota||texto)
+      ? {nota:draftResNota||null,texto,at:Date.now(),por:quem||null} : null;
+  }
+  let alvo=null, travaAviso=null, kitCaiu=false;
   if(editingCardId){
     const c=cards.find(x=>x.id===editingCardId);
     const prevStage=c.stage;
+    const assinAntes=kitAssinatura(c);
     Object.assign(c,data);
+    /* Liberacao vale para um pacote especifico. Mudou titulo, descricao, capa
+       ou data depois de alguem liberar, aquela liberacao era sobre outra coisa
+       e cai. Voltar para a fila do Breno e um clique. */
+    if(kitAssinatura(c)!==assinAntes) kitCaiu=zeraGatePub(c);
     // enterStage ja termina em applyDataEntrega. Quando a etapa nao muda, o
     // recalculo precisa acontecer mesmo assim, para que corrigir so uma data
     // propague para o status de prazo.
-    if(newStage!==prevStage) enterStage(c,newStage);
+    if(newStage!==prevStage){
+      const trava=travaPara(c,newStage);
+      if(trava){ travaAviso=trava; applyDataEntrega(c); }
+      else enterStage(c,newStage);
+    }
     else applyDataEntrega(c);
     runAutomations();
     syncCard(c);
+    alvo=c;
   }else{
     const c={id:crypto.randomUUID(),...data,stage:0,archived:false,createdAt:Date.now(),
       agendadoAt:null,gravadoAt:null,entregueAt:null,postadoAt:null,deliveryStatus:null,deliveryDays:null,
-      autoArchiveOptOut:false};
+      autoArchiveOptOut:false,aprov:{},ajustes:[],resultado:data.resultado||null};
+    /* Card que nasce ja adiantado e registro do que aconteceu, nao atalho:
+       nunca existiu o momento de aprovar aquilo. Entao a trava que ele pula
+       nasce como legado, e nao como furo. Furo e ter tido a chance e deixar
+       passar; acusar disso quem so esta cadastrando o passado seria mentira.
+       Depois de criado, o card obedece as travas como todos os outros. */
+    GATES.forEach(g=>{ if(newStage>=g.guarda) c.aprov[g.key]={legado:true}; });
     enterStage(c,newStage);
     cards.push(c);
     runAutomations();
     syncNewCard(c);
+    alvo=c;
+  }
+  if(travaAviso) toast('Card salvo em '+STAGES[alvo.stage].label+'. Para entrar em '+
+    STAGES[newStage].label+' falta '+travaAviso.titulo.toLowerCase()+'.');
+  if(kitCaiu) toast('O kit mudou, então a liberação que existia caiu. Voltou para a fila.');
+
+  if(acao&&acao.tipo==='ajuste'){
+    render(); closeCardModal(); abrirAjuste(alvo.id,acao.gate); return;
+  }
+  if(acao&&acao.tipo==='aprovar'){
+    if(!aprova(alvo,acao.gate,quem)){
+      editingCardId=alvo.id;
+      renderAprovBox(alvo); atualizaKitStatus(); render();
+      return;
+    }
+    syncCard(alvo);
+    toast(gateCompleto(alvo,acao.gate)
+      ? gateDe(acao.gate).label+': tudo aprovado, o card está liberado.'
+      : 'Seu aval está registrado. Falta '+listaPt(quemEsperamos(alvo,acao.gate).map(nomeDe))+'.');
   }
   render();closeCardModal();
 }
@@ -1392,7 +2378,7 @@ function deleteIdea(){if(!editingIdeaId)return;syncDeleteIdea(editingIdeaId);ide
 
 /* ---------- EXPORT / IMPORT ---------- */
 function exportBackup(){
-  const data={app:'crm-conteudo-cris-maciel',version:3,exportedAt:new Date().toISOString(),cards,ideas};
+  const data={app:'crm-conteudo-cris-maciel',version:4,exportedAt:new Date().toISOString(),cards,ideas};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -1479,18 +2465,23 @@ const REPORT_PRESETS=[
    stages:[S_ENTR,S_POST],prazo:''},
   {key:'publicados',label:'Publicados',descricao:'conteúdos já no ar',
    stages:[S_POST],prazo:''},
+  {key:'aprov',label:'Esperando aprovação',descricao:'conteúdos parados numa das travas',
+   stages:null,prazo:'',aprov:'fila'},
+  {key:'furo',label:'Passou sem aprovação',descricao:'conteúdos que andaram sem alguém liberar',
+   stages:null,prazo:'',aprov:'furo'},
 ];
 const REPORT_INCLUDES=[
   {key:'resumo',label:'Resumo em números',padrao:true},
   {key:'obs',label:'Observações',padrao:true},
   {key:'checklist',label:'Checklist pendente',padrao:false},
   {key:'link',label:'Link do vídeo',padrao:false},
+  {key:'aprov',label:'Aprovações e resultado',padrao:true},
 ];
 let repFiltro=null;
 function repFiltroPadrao(){
   const inc={};
   REPORT_INCLUDES.forEach(i=>inc[i.key]=i.padrao);
-  return {preset:'tudo',stages:null,classif:[],corretor:'',prazo:'',includes:inc,titulo:''};
+  return {preset:'tudo',stages:null,classif:[],corretor:'',prazo:'',aprov:'',includes:inc,titulo:''};
 }
 /* Classifica o card numa das situacoes de prazo oferecidas no filtro. */
 function situacaoPrazo(c){
@@ -1505,6 +2496,8 @@ function repAplicaFiltro(f){
     if(f.stages && !f.stages.includes(c.stage)) return false;
     if(f.classif.length && !f.classif.some(cl=>c.classificacoes.includes(cl))) return false;
     if(f.corretor && (c.corretor||'')!==f.corretor) return false;
+    if(f.aprov==='fila' && !GATES.some(g=>c.stage<g.guarda && !gateCompleto(c,g.key))) return false;
+    if(f.aprov==='furo' && !furos(c).length) return false;
     if(f.prazo){
       const s=situacaoPrazo(c);
       if(f.prazo==='problema'){ if(s!=='late' && s!=='atrasado') return false; }
@@ -1542,6 +2535,8 @@ function montaDadosRelatorio(f){
       st,si,list:ativos.filter(c=>c.stage===si).sort((a,b)=>urgencyKey(a,si)-urgencyKey(b,si)),
     })).filter(g=>g.list.length>0),
     atrasados:ativos.filter(c=>isOverdue(c,c.stage)).length,
+    esperandoRep:ativos.filter(c=>GATES.some(g=>c.stage<g.guarda&&!gateCompleto(c,g.key))).length,
+    furosRep:ativos.filter(c=>furos(c).length).length,
     entreguesOntime:ativos.filter(c=>c.deliveryStatus==='ontime').length,
     entreguesLate:ativos.filter(c=>c.deliveryStatus==='late').length,
     porEtapaResumo:STAGES.map((st,si)=>({label:st.label,n:ativos.filter(c=>c.stage===si).length})).filter(e=>e.n>0),
@@ -1551,6 +2546,25 @@ function montaDadosRelatorio(f){
     recorte:repDescricao(f),
     nomeArquivo:'acompanhamento-gravacoes-'+todayISO(),
   };
+}
+
+/* Mesma frase no card, no relatorio impresso e no PDF. Uma verdade so. */
+function resumoAprov(c){
+  const fs=furos(c);
+  if(fs.length) return '⚠ '+fs.map(g=>g.furo).join(' · ');
+  const g=GATES.find(g=>c.stage<g.guarda && !gateCompleto(c,g.key));
+  if(g){
+    const ped=ajustePendente(c,g.key);
+    if(ped) return '↩ Ajuste pedido por '+nomeDe(ped.por)+': '+ped.texto;
+    return '⏳ '+g.titulo+', falta '+listaPt(quemEsperamos(c,g.key).map(nomeDe));
+  }
+  const prox=GATES.find(g=>c.stage<g.guarda);
+  return prox?('✓ '+prox.label):'';
+}
+function resumoResultado(c){
+  if(!c.resultado||!c.resultado.nota) return '';
+  return 'Resultado: '+rotuloResultado(c.resultado.nota)+
+    (c.resultado.texto?' · '+c.resultado.texto:'');
 }
 
 function cardReportRow(c,si,inc){
@@ -1567,6 +2581,8 @@ function cardReportRow(c,si,inc){
       ${c.dataGravacao?`<div class="rep-meta">Gravação em ${fmtISO(c.dataGravacao)}</div>`:''}
       ${c.dataEntrega?`<div class="rep-meta">Entrega em ${fmtISO(c.dataEntrega)}</div>`:''}
       ${situacao?`<div class="rep-status">${situacao}</div>`:''}
+      ${inc.aprov&&resumoAprov(c)?`<div class="rep-meta">${esc(resumoAprov(c))}</div>`:''}
+      ${inc.aprov&&resumoResultado(c)?`<div class="rep-meta">${esc(resumoResultado(c))}</div>`:''}
       ${redes.length?`<div class="rep-meta">Publicações: ${redes.join(' · ')}</div>`:''}
       ${inc.link&&c.link?`<div class="rep-meta">Link: ${esc(c.link)}</div>`:''}
       ${pendentes.length?`<div class="rep-check"><b>Falta</b><ul>${pendentes.map(i=>`<li>${esc(i.text)}</li>`).join('')}</ul></div>`:''}
@@ -1577,7 +2593,7 @@ function exportReport(f){
   const d=montaDadosRelatorio(f);
   if(!d) return;
   const {inc,ativos,porEtapa,atrasados,entreguesOntime,entreguesLate,
-    porEtapaResumo,metasResumo,dataGeracao,titulo,recorte,nomeArquivo}=d;
+    porEtapaResumo,metasResumo,dataGeracao,titulo,recorte,nomeArquivo,esperandoRep,furosRep}=d;
 
   const secoesHtml=porEtapa.map(g=>`
     <section class="rep-sec">
@@ -1638,6 +2654,8 @@ function exportReport(f){
     <div class="rep-chip"><div class="n">${atrasados}</div><div class="l">Atrasados</div></div>
     <div class="rep-chip"><div class="n">${entreguesOntime}</div><div class="l">No prazo</div></div>
     <div class="rep-chip"><div class="n">${entreguesLate}</div><div class="l">Com atraso</div></div>
+    <div class="rep-chip"><div class="n">${esperandoRep}</div><div class="l">Esperando aprovação</div></div>
+    <div class="rep-chip"><div class="n">${furosRep}</div><div class="l">Passou sem aprovação</div></div>
     ${metasResumo.map(m=>`<div class="rep-chip"><div class="n">${m.n}/${m.target}</div><div class="l">${esc(m.label)}</div></div>`).join('')}
   </div>`:''}
   ${secoesHtml}
@@ -1675,7 +2693,7 @@ function exportReportPDF(f){
   const d=montaDadosRelatorio(f);
   if(!d) return;
   const {inc,ativos,porEtapa,atrasados,entreguesOntime,entreguesLate,
-    porEtapaResumo,metasResumo,dataGeracao,titulo,recorte,nomeArquivo}=d;
+    porEtapaResumo,metasResumo,dataGeracao,titulo,recorte,nomeArquivo,esperandoRep,furosRep}=d;
 
   const doc=new lib({unit:'mm',format:'a4',orientation:'portrait'});
   const LARG=210, ALT=297, M=15, W=LARG-2*M;
@@ -1727,7 +2745,8 @@ function exportReportPDF(f){
   if(inc.resumo){
     const chips=[{n:ativos.length,l:'No relatório'}]
       .concat(porEtapaResumo.map(e=>({n:e.n,l:e.label})))
-      .concat([{n:atrasados,l:'Atrasados'},{n:entreguesOntime,l:'No prazo'},{n:entreguesLate,l:'Com atraso'}])
+      .concat([{n:atrasados,l:'Atrasados'},{n:entreguesOntime,l:'No prazo'},{n:entreguesLate,l:'Com atraso'},
+               {n:esperandoRep,l:'Esperando aprovação'},{n:furosRep,l:'Passou sem aprovação'}])
       .concat(metasResumo.map(m=>({n:m.n+'/'+m.target,l:m.label})));
     const porLinha=4, larg=(W-3*3)/porLinha, altC=14;
     chips.forEach((c,i)=>{
@@ -1771,6 +2790,8 @@ function exportReportPDF(f){
       const redes=(c.areas||[]).filter(a=>a.data).map(a=>a.rede+' '+fmtISO(a.data));
       if(redes.length) metas.push('Publicações: '+redes.join(' · '));
       if(inc.link&&c.link) metas.push('Link: '+c.link);
+      if(inc.aprov&&resumoAprov(c)) metas.push(resumoAprov(c));
+      if(inc.aprov&&resumoResultado(c)) metas.push(resumoResultado(c));
       const situacao=situacaoInfo(c,g.si).map(p=>p.text).join(' · ');
       const pendentes=inc.checklist?c.checklist.filter(i=>!i.done).map(i=>'• '+i.text):[];
 
@@ -1830,7 +2851,7 @@ function openReportModal(){
 function closeReportModal(){ document.getElementById('overlayReport').classList.remove('open'); }
 /* Marcar qualquer filtro na mao desliga o modelo pronto, para o documento nao
    sair descrito como uma coisa e filtrado como outra. */
-function repCustomizou(){ repFiltro.preset=null; renderReportModal(); }
+function repCustomizou(){ repFiltro.preset=null; repFiltro.aprov=''; renderReportModal(); }
 function renderReportModal(){
   const f=repFiltro;
 
@@ -1859,7 +2880,7 @@ function renderReportModal(){
 
   document.getElementById('rPresets').querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{
     const p=REPORT_PRESETS.find(x=>x.key===b.dataset.preset);
-    f.preset=p.key; f.stages=p.stages?[...p.stages]:null; f.prazo=p.prazo;
+    f.preset=p.key; f.stages=p.stages?[...p.stages]:null; f.prazo=p.prazo; f.aprov=p.aprov||'';
     renderReportModal();
   }));
   document.getElementById('rStages').querySelectorAll('[data-stage]').forEach(b=>b.addEventListener('click',()=>{
@@ -1925,13 +2946,27 @@ document.querySelectorAll('#viewSeg button').forEach(b=>b.addEventListener('clic
 document.getElementById('btnNew').addEventListener('click',()=>openCardModal(null));
 document.getElementById('mClose').addEventListener('click',closeCardModal);
 document.getElementById('mCancel').addEventListener('click',closeCardModal);
-document.getElementById('mSave').addEventListener('click',saveCardModal);
+document.getElementById('mSave').addEventListener('click',()=>saveCardModal());
 document.getElementById('mDelete').addEventListener('click',deleteCard);
 document.getElementById('mArchive').addEventListener('click',archiveCard);
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeCardModal()});
 document.getElementById('fTitle').addEventListener('input',e=>e.target.style.borderColor='');
 ['fGravacao','fDataEntrega','fStage'].forEach(id=>
   document.getElementById(id).addEventListener('change',atualizaAvisoPrazo));
+['fPubTitulo','fPubDescricao','fPubCapa'].forEach(id=>
+  document.getElementById(id).addEventListener('input',atualizaKitStatus));
+
+/* IDENTIDADE */
+document.getElementById('btnEu').addEventListener('click',abrirQuem);
+document.getElementById('qClose').addEventListener('click',fecharQuem);
+document.getElementById('overlayQuem').addEventListener('click',e=>{if(e.target.id==='overlayQuem')fecharQuem()});
+
+/* PEDIDO DE AJUSTE */
+document.getElementById('ajClose').addEventListener('click',fecharAjuste);
+document.getElementById('ajCancel').addEventListener('click',fecharAjuste);
+document.getElementById('ajSalvar').addEventListener('click',salvaAjuste);
+document.getElementById('ajTexto').addEventListener('input',e=>e.target.style.borderColor='');
+document.getElementById('overlayAjuste').addEventListener('click',e=>{if(e.target.id==='overlayAjuste')fecharAjuste()});
 
 document.getElementById('btnNewIdea').addEventListener('click',()=>openIdeaModal(null));
 document.getElementById('iClose').addEventListener('click',closeIdeaModal);
@@ -1957,16 +2992,20 @@ document.getElementById('btnImport').addEventListener('click',()=>document.getEl
 document.getElementById('fileImport').addEventListener('change',e=>{if(e.target.files[0])importBackup(e.target.files[0]);e.target.value='';});
 document.getElementById('btnMerge').addEventListener('click',()=>document.getElementById('fileMerge').click());
 document.getElementById('fileMerge').addEventListener('change',e=>{if(e.target.files[0])mergeBackup(e.target.files[0]);e.target.value='';});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCardModal();closeIdeaModal();closeReportModal();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCardModal();closeIdeaModal();closeReportModal();fecharQuem();fecharAjuste();}});
 
 (async function(){
   initSelects();
   initTips();
+  carregaQuem();
   await load();
   const changed=runAutomations();
   if(cloud) changed.forEach(syncCard); else if(changed.length) persistLocal();
   render();
   document.getElementById('loading').style.display='none';
+  /* Sem saber quem esta do outro lado, aprovacao nao significa nada. Entao a
+     primeira coisa que o app pergunta, uma vez so por navegador, e isso. */
+  if(!quem) abrirQuem();
   setInterval(()=>{
     const changed2=runAutomations();
     if(changed2.length){

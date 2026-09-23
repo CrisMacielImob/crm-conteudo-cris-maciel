@@ -27,12 +27,33 @@ create table if not exists public.cards (
   postado_at timestamptz,
   delivery_status text,
   delivery_days integer,
-  auto_archive_opt_out boolean not null default false
+  auto_archive_opt_out boolean not null default false,
+  -- Travas de aprovacao. aprov guarda quem liberou o que e quando:
+  --   { "pauta": { "breno": {"at": 1700000000000}, "nicole": {...} },
+  --     "pub":   { "nicole": {...}, "breno": {...} } }
+  -- A chave "legado" dentro de uma trava marca card anterior ao recurso.
+  aprov jsonb not null default '{}',
+  -- Historico de pedidos de ajuste: [{ gate, por, at, texto }]
+  ajustes jsonb not null default '[]',
+  -- Kit de publicacao, o que a Nicole monta antes de mandar para liberacao
+  pub_titulo text default '',
+  pub_descricao text default '',
+  pub_capa text default '',
+  -- Leitura de resultado depois do ar: { nota, texto, at, por }
+  resultado jsonb
 );
 
--- Cobre projetos onde a tabela cards ja existia antes destas duas colunas.
+-- Cobre projetos onde a tabela cards ja existia antes destas colunas. Rodar
+-- este arquivo de novo num banco que ja existe e seguro: nada aqui apaga
+-- dado, so acrescenta o que falta.
 alter table public.cards add column if not exists data_entrega date;
 alter table public.cards add column if not exists auto_archive_opt_out boolean not null default false;
+alter table public.cards add column if not exists aprov jsonb not null default '{}';
+alter table public.cards add column if not exists ajustes jsonb not null default '[]';
+alter table public.cards add column if not exists pub_titulo text default '';
+alter table public.cards add column if not exists pub_descricao text default '';
+alter table public.cards add column if not exists pub_capa text default '';
+alter table public.cards add column if not exists resultado jsonb;
 
 -- ---------- IDEIAS ----------
 create table if not exists public.ideas (
